@@ -1,0 +1,71 @@
+[type]
+location
+
+[name]
+test location
+
+[items]
+anvil
+hammer
+
+[description]
+Short description
+A little bit longer description
+
+[properties]
+size = 1000
+height = 700
+
+[actions]
+i THEN POCKET
+examine THEN EXAMINE OBJECT
+be knight THEN BECOME knight
+be nothing THEN BECOME nothing
+be wire THEN BECOME unisolated wire
+be palladin THEN BECOME palladin
+look THEN LOOK
+take WHEN OBJECT weight < 1000 THEN TAKE OBJECT; PRINT You take OBJECT
+take THEN PRINT OBJECT is too heavy to take
+carry WHEN SUBJECT weight < 1000 THEN TAKE SUBJECT; PRINT You take SUBJECT
+carry THEN PRINT SUBJECT is too heavy to carry
+drop THEN PRINT You drop OBJECT; DROP OBJECT
+test1 WHEN PLAYER mana > 10 THEN PRINT Player has enough mana to cast the spell
+test1 THEN PRINT Player cannot cast the spell
+test2 WHEN PLAYER mana > 30 THEN PRINT Player has enough mana to cast the spell
+test2 THEN PRINT Player cannot cast the spell
+jump1 WHEN LOCATION height > 500 THEN PRINT Boing, Boing...
+jump1 THEN PRINT It is too low to jump
+jump2 WHEN LOCATION height > 1000 THEN PRINT Boing, Boing...
+jump2 THEN PRINT It is too low to jump
+smithh WHEN anvil weight > 9000 THEN PRINT You can smith!
+smithh THEN PRINT You're kiddin?
+smith WHEN anvil weight > 7000 THEN PRINT You can smith!
+smith THEN PRINT You're kiddin?
+x WHEN ITEM weight > 7000 THEN TAKE ITEM; PRINT You take ITEM.
+game WHEN DICE <= 3 THEN PRINT You lost...
+game THEN PRINT You win!
+advo THEN MODIFY OBJECT rate BY 1
+seto THEN MODIFY OBJECT rate TO 2
+chko WHEN OBJECT rate >= 3 THEN PRINT You reach level 3.
+chko THEN PRINT You are noob.
+advs THEN MODIFY OBJECT sub BY 1
+sets THEN MODIFY OBJECT sub TO 2
+chks WHEN OBJECT sub >= 3 THEN PRINT You reach level 3.
+chks THEN PRINT You are noob.
+advp THEN MODIFY PLAYER x BY 1
+setp THEN MODIFY PLAYER x TO 2
+chkp WHEN PLAYER x >= 3 THEN PRINT You reach level 3.
+chkp THEN PRINT You are noob.
+advl THEN MODIFY LOCATION y BY 1
+setl THEN MODIFY LOCATION y TO 2
+chkl WHEN LOCATION y >= 3 THEN PRINT You reach level 3.
+chkl THEN PRINT You are noob.
+advf THEN MODIFY anvil usage BY 1
+setf THEN MODIFY anvil usage TO 2
+chkf WHEN anvil usage >= 3 THEN PRINT You reach level 3.
+chkf THEN PRINT You are noob.
+advi WHEN ITEM weight > 0 THEN MODIFY ITEM usage BY 1
+seti WHEN ITEM weight > 0 THEN MODIFY ITEM usage TO 2
+chki WHEN ITEM weight > 0; ITEM usage >= 3 THEN PRINT You reach level 3.
+chki WHEN ITEM weight > 0 THEN PRINT You are noob.
+

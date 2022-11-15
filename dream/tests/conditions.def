@@ -1,0 +1,15 @@
+[type]
+location
+
+[name]
+conditions
+
+[description]
+short
+a little bit longer
+
+[actions]
+t1 WHEN 1>2 THEN PRINT This should not happened. 
+t1 THEN PRINT This is the right text
+t2 WHEN 2=2+2*2/2-2 THEN PRINT This is true
+t2 THEN PRINT Nobody will say that white is white and black is black

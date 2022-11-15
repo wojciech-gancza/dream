@@ -1,0 +1,13 @@
+[type]
+item
+
+[name]
+fire
+
+[description]
+A fire burning in a fireplace on the floor 
+The fire is warm and gives some light around.
+
+[actions]
+take fire THEN PRINT You cannot take the fire.
+extinguish THEN PRINT You extinguish the fire with some sand.; DEL fire; DROP NEW fireplace

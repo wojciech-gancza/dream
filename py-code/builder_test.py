@@ -14,7 +14,8 @@ from data      import location, \
                       properties, \
                       actions, \
                       item, \
-                      realm
+                      realm, \
+                      player
 from builder   import file_data_source, \
                       array_tokenizer, \
                       buffered_token_source, \
@@ -390,7 +391,7 @@ class Test_object_builder(unittest.TestCase):
             ivt = object_builder._create_items(data_source, factory)
             self.assertTrue(False)
         except error as err:
-            self.assertEqual(str(err), "ERROR: Cannot create object named 'wired unisolator'")
+            self.assertEqual(str(err), "ERROR: Cannot create object named 'wired unisolator' because '[Errno 2] No such file or directory: '../dream/tests/wired_unisolator.def''")
         
     def test_of_getting_items(self):
         data_source = array_tokenizer( \
@@ -403,15 +404,21 @@ class Test_object_builder(unittest.TestCase):
  
 class Test_object_factory(unittest.TestCase):
     
-    def test_of_creation_object_2(self):
+    def test_of_creation_object_1(self):
         factory = object_factory("../dream/tests")
         obj = factory.get_object("dark cave")
         self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\ndark cave\ncave\nunknown cave\n\n[realm]\nreality\n\n[properties]\nvolume = 1000\nlight = 5\n\n[items]\nwire\n\n[description]\nThe cave is really dark\nYou see barly nothing. The cave is really dark. After a while you seem to see a shadows in the darkness but you cannot realize what it can be. You see no way out and no possiblility to move safely.\n\n[actions]\nlook THEN PRINT It is too dark to see anything. You should relay or other senses.\ntouch THEN PRINT You feel wet stone walls. A lot of wet stones. Wet stones ewerywhere. Moment! You feel something like thick wire.\nsmell THEN PRINT It is wet but air seems to be fresh. Maybe better call it - well preserved.\n")       
 
-    def test_of_creation_object_1(self):
+    def test_of_creation_object_2(self):
         factory = object_factory("../dream/tests")
         obj = factory.get_object("unisolated wire")
-        self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\nwire\nunisolated wire\naluminum wire\n\n[properties]\nresistance = 1\n\n[description]\nShort piece of shiny wire.\nThis is a piece of wire. It is about 20cm long and it looks like made of aluminium. It is preety hard to bend, but bendable in bare fingers.\n\n[actions]\n")
+        self.assertEqual(str(obj), "[type]\nitem\n\n[name]\nwire\nunisolated wire\naluminum wire\n\n[properties]\nresistance = 1\n\n[description]\nShort piece of shiny wire.\nThis is a piece of wire. It is about 20cm long and it looks like made of aluminium. It is preety hard to bend, but bendable in bare fingers.\n\n[actions]\n")
+  
+    def test_of_creation_object_3(self):
+        factory = object_factory("../dream/tests")
+        obj = factory.get_object("knight")
+        self.assertTrue(type(obj) is player)
+        self.assertEqual(str(obj), "[type]\nplayer\n\n[properties]\nforce = 1000\n\n[items]\nmatches\n")
   
 #-------------------------------------------------------------------------
 

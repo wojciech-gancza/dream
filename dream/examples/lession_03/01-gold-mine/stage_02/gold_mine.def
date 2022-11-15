@@ -1,0 +1,27 @@
+[type]
+location
+
+[realm]
+realm
+
+[name]
+gold mine
+
+[items]
+knife
+
+[description]
+You see a a tunnel of old gold mine
+You are in gold mine. It looks like abadoned long time ago, but when you look closely at the walls you see a stain of glitter. On the south you see the main entrace.
+
+[actions]
+s; south; go south THEN GOTO bank
+
+_ dig with pickaxe WHEN DICE < 4 THEN PRINT You attempt to dig gold, but you found nothing.
+_ dig with pickaxe THEN PRINT You dig some gold; EXEC _ create gold when needed; MODIFY gold value BY 10 + DICE 50 
+
+_ dig with knife WHEN DICE < 5 THEN PRINT You attempt to dig gold by scratching the wall, but you found nothing.
+_ dig with knife THEN PRINT You dig some gold; EXEC _ create gold when needed; MODIFY gold value BY DICE
+
+_ create gold when needed WHEN gold value = 0 THEN TAKE NEW gold
+_ create gold when needed THEN PRINT You add the new gold to the one you already found.

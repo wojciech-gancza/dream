@@ -1,0 +1,23 @@
+[type]
+realm
+
+[actions]
+stat realm; dump realm; realm THEN DUMP REALM
+stat player; dump player; player THEN DUMP PLAYER
+stat location; dump location; location THEN DUMP LOCATION
+stat; dump THEN DUMP OBJECT
+trace THEN TRACE 1
+ntrace THEN TRACE 0
+
+n; north; go north THEN PRINT You cannot go north.
+e; east; go east THEN PRINT You cannot go east.
+s; south; go south THEN PRINT You cannot go south.
+w; west; go west THEN PRINT You cannot go west.
+talk THEN PRINT You see nobody to tals with. 
+look THEN LOOK
+wake up THEN EXIT
+examine THEN EXAMINE OBJECT
+drop THEN DROP OBJECT
+i THEN POCKET
+take WHEN OBJECT locked = 0 THEN TAKE OBJECT; PRINT You take OBJECT
+take THEN PRINT You cannot take OBJECT

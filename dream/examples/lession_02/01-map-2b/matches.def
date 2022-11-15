@@ -1,0 +1,13 @@
+[type]
+item
+
+[name]
+box of matches
+matches
+
+[description]
+A box full of matches.
+It is a small box filled with ordinary matches. It is nothing special with them.
+
+[actions]
+burn; fire THEN EXEC _ burn

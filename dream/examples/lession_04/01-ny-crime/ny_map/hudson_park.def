@@ -1,0 +1,16 @@
+[type]
+location
+
+[realm]
+new york
+
+[name]
+Hudson Park
+
+[description]
+Hudson Park
+Hudson Park
+
+[actions]
+n; north; go north THEN PRINT You go north to ...; GOTO high lane
+e; west; go west THEN PRINT You go east to ...; GOTO wall street

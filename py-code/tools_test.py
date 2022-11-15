@@ -10,7 +10,8 @@ import                  unittest
 
 from tools       import translator
 from data        import location, \
-                        items
+                        items, \
+                        player
 from errors      import error
 from builder     import object_factory, \
                         factory_realm_cache, \
@@ -26,14 +27,23 @@ class testing_console(object):
         
     def __init__(self, input):
         self._buffer = ""
+        self._debug = ""
         if not type(input) is list:
             raise error("Testing console must be feed by array of commands")
         self._input = input
         self._input_pos = 0
+        self.trace = False
         
     def write(self, text):
         self._buffer = self._buffer + text + "\n"
-        
+         
+    def dump(self, text):
+        self._debug = self._debug + text + "\n"
+         
+    def log(self, text):
+        if self.trace:
+            self._debug = self._debug + text + "\n"
+         
     def get_output(self):
         return self._buffer
         
@@ -58,12 +68,18 @@ class _game_mock:
         self._location = location()
         self._location._description.set_description("loc.", "long description of location")
         self._factory = factory_location_cache(3, factory_realm_cache(object_factory("../dream/tests")))
-        self._pocket = items()
-        self._pocket.put_item( self._factory.get_object("lockpick made from wire") )
-        self._pocket.put_item( self._factory.get_object("unisolated wire") )
+        self._location._realm = self._factory.get_object("reality")
+        self._memo = {  }
+        self._player = player()
+        self._player._properties.add("life", 1000)
+        self._player._properties.add("mana", 5000)
+        self._player._items = items()
+        self._player._items.put_item( self._factory.get_object("lockpick made from wire") )
+        self._player._items.put_item( self._factory.get_object("unisolated wire") )
         
     def execute(self, command_text):
-        if self._pocket.try_execute(command_text, self):
+        self._memo = {  }
+        if self._player._items.try_execute(command_text, self):
             return True
         if self._location.try_execute(command_text, self):
             return True

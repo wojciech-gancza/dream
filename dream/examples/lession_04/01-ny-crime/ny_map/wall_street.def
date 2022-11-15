@@ -1,0 +1,16 @@
+[type]
+location
+
+[realm]
+new york
+
+[name]
+Wall Street
+
+[description]
+Wall Street
+Wall Street
+
+[actions]
+n; north; go north THEN PRINT You go north to ...; GOTO broadway
+w; west; go west THEN PRINT You go west to ...; GOTO hudson park

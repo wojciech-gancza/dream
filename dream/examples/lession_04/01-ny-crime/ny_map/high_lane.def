@@ -1,0 +1,17 @@
+[type]
+location
+
+[realm]
+new york
+
+[name]
+High Lane
+
+[description]
+High Lane
+High Lane
+
+[actions]
+n; north; go north THEN PRINT You go north to ...; GOTO continental hotel
+e; east; go east THEN PRINT You go east to ...; GOTO broadway
+s; south; go south THEN PRINT You go south to ...; GOTO hudson park

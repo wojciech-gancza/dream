@@ -7,7 +7,8 @@ import                  sys
 import                  os
 
 from builder     import object_factory
-from channel     import console
+from channel     import console, \
+                        ansi_console
 from tools_test  import testing_console
 from game        import processor
 from data        import items
@@ -23,11 +24,14 @@ if __name__ == '__main__':
         if os.path.isdir(factory_path):
             if os.path.isfile(factory_path + "/" + startup_location + ".def"):
                 parameters_read = True
+    if not parameters_read:
+        factory_path = "C:/Users/wgan/Desktop/DREAM/dream/examples/lession_02/01-map-2b"
+        startup_location = "entrance"
+        parameters_read = True
     if parameters_read:
-        io      = console()
+        io      = ansi_console()
         factory = object_factory(factory_path)
         game    = processor(factory, io, startup_location)
-
         game.run()
     else:
         print("Program must be run with two parameters:")

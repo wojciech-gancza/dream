@@ -1,0 +1,16 @@
+[type]
+item
+
+[name]
+corpse
+
+[properties]
+locked = 1
+have wallet = 1
+
+[description]
+The human corpse
+It is 40-45 years old white male lying on the path. It looks dead but looks like sleeping. You see no cause of its current state. 
+
+[actions]
+examine WHEN OBJECT have wallet > 0 THEN EXAMINE OBJECT; PRINT You search him and found wallet containing pawn shop ticket.; DROP NEW wallet; DROP NEW pawn shop ticket; MODIFY PLAYER know corpse BY 1; MODIFY OBJECT have wallet TO 0

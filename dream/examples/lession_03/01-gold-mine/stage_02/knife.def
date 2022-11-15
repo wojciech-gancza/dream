@@ -1,0 +1,13 @@
+[type]
+item
+
+[name]
+knife
+simple knife
+
+[properties]
+power = 15
+
+[description]
+Simple knife
+A simple piece of poor steel formet into primitive knife with wooden handle.

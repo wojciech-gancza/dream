@@ -2,377 +2,55 @@
 # DREAM (C) WGan 2020
 #-------------------------------------------------------------------------
 
-""" Processor is a module which process and changes state of the game, by
-    processing commands on given items """
+""" compiler allow compilation of actions """
 
 from errors      import error, \
                         break_action
 from tools       import translator
-
-#-------------------------------------------------------------------------
-
-class object_provider(object):
-
-    """ object provider is used as parameter of dL command. It can be 
-        attached to execution node which need object as its parameter.
-        Because it can be differenly used, it can contain object (if 
-        mentioned object is available, however it can also keep possible 
-        object names """
-
-    def __init__(self):
-        self._name = ""
-        self._object = None
-        self._already_taken = False
-        
-    def set_accessible_object_name(self, name, game):
-        self._already_taken = False
-        if type(name) == list:
-            for single_name in name:
-                self.set_accessible_object_name(single_name, game)
-                if not self._object is None:
-                    return
-            if self._object is None:
-                self._name = name
-        else:
-            self._object = game._pocket.peek_item(name)
-            if self._object is None:
-                self._object = game._location._items.peek_item(name)
-            if self._object is None:
-                self._name = name
-            else:
-                self._name = self._object._name.get_name()
-       
-    def get_name(self):
-        if type(self._name) is list:
-            return self._name[0]
-        return self._name
-
-    def peek_object(self):
-        return self._object
-
-    def take_object(self, game):
-        if not self._already_taken:
-            name = self.get_name()
-            self._object = game._pocket.get_item(name)
-            if self._object is None:
-                self._object = game._location._items.get_item(name)
-            self._already_taken = True
-        return self._object
-
-#-------------------------------------------------------------------------
-
-class object_parameter_provider(object_provider):
-    
-    """ Provider taking object from the user command parameters
-        This provider takes object located at the end of the 
-        command. If parameters contain more words, all possiblities
-        of command names will be used. Possiblities are taken 
-        cutting begin of parameterts """
-    
-    def set_parameters(self, game, parameters):
-        names = [parameters]
-        pos = parameters.find(" ")
-        while pos >= 0:
-            parameters = parameters[pos:].strip()
-            names.append(parameters)
-            pos = parameters.find(" ")
-        self.set_accessible_object_name(names, game)
-        
-    def __str__(self):
-        return "OBJECT"
-        
-#-------------------------------------------------------------------------
-
-class subject_parameter_provider(object_provider):
-
-    """ Provider taking subject from the user command parameters
-        This provider takes subject located at the begining of the 
-        command. If parameters contain more words, all possiblities
-        of command names will be used. Possiblities are taken 
-        cutting end of parameterts """
-    
-    def set_parameters(self, game, parameters):
-        names = [parameters]
-        pos = parameters.rfind(" ")
-        while pos >= 0:
-            parameters = parameters[0:pos].strip()
-            names.append(parameters)
-            pos = parameters.rfind(" ")
-        self.set_accessible_object_name(names, game)
-        
-    def __str__(self):
-        return "SUBJECT"
-        
-#-------------------------------------------------------------------------
-
-class constant_provider(object_provider):
-    
-    """ provider returning object wirh selected name """
-    
-    def __init__(self, name):
-        self._constant_name = name
-    
-    def set_parameters(self, game, parameters):
-        self.set_accessible_object_name(self._constant_name, game)
-
-    def __str__(self):
-        return self._constant_name
-        
-#-------------------------------------------------------------------------
-
-class new_object_provider(object_provider):
-
-    """ provider decorator always returining new object """
-
-    def __init__(self, subprovider):
-        self._child_provider = subprovider
-        
-    def set_parameters(self, game, parameters):
-        self._child_provider.set_parameters(game, parameters)
-        self._name = self._child_provider.get_name()
-        try:
-            self._object = game._factory.get_object(self._name)
-        except:
-            self._object = None
-        self._already_taken = True
-
-    def __str__(self):
-        return "NEW " + str(self._child_provider)
-        
-#-------------------------------------------------------------------------
-
-class exit_node(object):
-
-    """ Execution element stopping the execution """
-
-    def run(self, game, parameters):
-        game.stop()
-        
-    def __str__(self):
-        return "EXIT"
-        
-#-------------------------------------------------------------------------
-
-class translating_text_node(object):
-
-    """ node with text where keywords are translated """
-    
-    def __init__(self, text):
-        self._text = text
-        
-    def _get_text(self, game, parameters):
-        text = self._text
-        if text.find("OBJECT") >= 0:
-            provider = object_parameter_provider()
-            provider.set_parameters(game, parameters)
-            if provider._object is None:
-                return
-            text = text.replace("OBJECT", provider.get_name())
-        if text.find("SUBJECT") >= 0:
-            provider = subject_parameter_provider()
-            provider.set_parameters(game, parameters)
-            if provider._object is None:
-                return
-            text = text.replace("SUBJECT", provider.get_name())
-        return text
-
-#-------------------------------------------------------------------------
-
-class print_text_node(translating_text_node):
-
-    """ Execution element printing constant text """
-   
-    def run(self, game, parameters):
-        game._console.write( self._get_text(game, parameters ) )
-        
-    def __str__(self):
-        return "PRINT " + self._text
-       
-#-------------------------------------------------------------------------
-
-class look_around_node(object):
-
-    """ Execution element printing long description of the location """
-    
-    def run(self, game, parameters):
-        game._console.write( game._location._description.get_long_text() )
-        if game._location._items._items != []:
-            game._console.write("You notice:")
-            for item in game._location._items._items:
-                game._console.write(" - " + item._description.get_short_text())
-        
-    def __str__(self):
-        return "LOOK"
-
-#-------------------------------------------------------------------------
-
-class change_location_node(object):
-
-    """ Execution element changes current location """
-    
-    def __init__(self, location_name):
-        self._location_name = location_name
-    
-    def run(self, game, parametrs):
-        game._location = game._factory.get_object( self._location_name )
-        game._console.write("You are in " + game._location._name.get_name())
-        game._console.write(game._location._description.get_short_text())
-        
-    def __str__(self):
-        return "GOTO " + self._location_name
-
-#-------------------------------------------------------------------------
-
-class inventory_node(object):
-
-    """ Lists all items in player inventory """
-    
-    def run(self, game, parametrs):       
-        if game._pocket._items != []:
-            game._console.write("You have:")
-            for item in game._pocket._items:
-                game._console.write(" - " + item._description.get_short_text())
-        else:
-            game._console.write("You have nothing.")
-            
-    def __str__(self):
-        return "POCKET"
-
-#-------------------------------------------------------------------------
-
-class object_manipulating_node(object):
-
-    """ Base class fot operations working on single item. This
-        class have common code for TAKE, DROP, INVENTORY and other
-        similar nodes """
-
-    def __init__(self, object_provider):
-        self._object_provider = object_provider
-        
-    def run(self, game, parameters):
-        self._object_provider.set_parameters(game, parameters)
-        object = self._object_provider.peek_object()
-        if object is None:
-            name = self._object_provider._name
-            if type(name) is list: 
-                name = name[0]
-            if name == "":
-                game._console.write("Be more specific")
-            else:
-                game._console.write("I see no " + self._object_provider.get_name())
-            return
-        self.process_object(game)
-   
-#-------------------------------------------------------------------------
-
-class examine_node(object_manipulating_node):
-
-    """ Shows description of an item available at location of players pocket """
-    
-    def process_object(self, game):
-        object = self._object_provider.peek_object()
-        game._console.write(object._description.get_long_text())
-        
-    def __str__(self):
-        return "EXAMINE " + str(self._object_provider)
-
-#-------------------------------------------------------------------------
-
-class take_item_node(object_manipulating_node):
-
-    """ gets available item and places it in player inventory """
-    
-    def process_object(self, game):
-        object = self._object_provider.take_object(game)
-        game._pocket.put_item(object)
-        
-    def __str__(self):
-        return "TAKE " + str(self._object_provider)
-            
-#-------------------------------------------------------------------------
-
-class drop_item_node(object_manipulating_node):
-
-    """ gets available item and places it in player inventory """
-    
-    def process_object(self, game):
-        object = self._object_provider.take_object(game)
-        game._location._items.put_item(object)
-
-    def __str__(self):
-        return "DROP " + str(self._object_provider)
-        
-#-------------------------------------------------------------------------
-
-class delete_item_node(object_manipulating_node):
-
-    """ gets available item and places it in player inventory """
-    
-    def process_object(self, game):
-        object = self._object_provider.take_object(game)
-
-    def __str__(self):
-        return "DEL " + str(self._object_provider)       
-        
-#-------------------------------------------------------------------------
-
-class execute_command_node(translating_text_node):
-
-    """ executes the text which is parameter """
-    
-    def run(self, game, parameters):
-        if not game.execute( self._get_text(game, parameters ) ):
-            raise break_action()
-        
-    def __str__(self):
-        return "EXEC " + self._text
-        
-#-------------------------------------------------------------------------
-
-class command_name(object):
-
-    """ The name set of command. """
-    
-    def __init__(self, names):
-        self._possibilities = names
-        
-    def length_of_a_command_if_match(self, command_text):
-        for possibility in self._possibilities:
-            possibility_len = len(possibility)
-            command_len = len(command_text)
-            if command_text[0:possibility_len] == possibility:
-                if command_len == possibility_len or command_text[possibility_len] == " ":
-                    return possibility_len
-        return 0
-        
-    def __str__(self):
-        return "; ".join(self._possibilities)
-
-#-------------------------------------------------------------------------
-
-class command(object):
-    
-    """ Command ready to execute. Contain all elements needed to execute 
-        command including check of user command match. """
-    
-    def __init__(self, name, executables):
-        self._name = name
-        self._executables = executables
-        
-    def try_execute(self, user_command, game):
-        command_len = self._name.length_of_a_command_if_match(user_command)
-        if command_len > 0:
-            parameters = user_command[command_len:].strip()
-            for executable in self._executables:
-                executable.run(game, parameters)
-            return True
-        return False
-        
-    def __str__(self):
-        ret = str(self._name)
-        execs = "; ".join( [ str(command) for command in self._executables ] )
-        ret = ret + " THEN " + execs
-        return ret
+from expression  import object_provider, \
+                        object_parameter_provider, \
+                        object_parameter_provider, \
+                        subject_parameter_provider, \
+                        item_parameter_provider, \
+                        constant_provider, \
+                        new_object_provider, \
+                        constant_value_expression, \
+                        sum_expression, \
+                        product_expression, \
+                        object_property_provider, \
+                        subject_property_provider, \
+                        location_property_provider, \
+                        player_property_provider, \
+                        item_property_provider, \
+                        free_text_property_provider, \
+                        dice_expression, \
+                        player_provider, \
+                        location_provider, \
+                        realm_provider
+from execution   import exit_node, \
+                        translating_text_node, \
+                        print_text_node, \
+                        look_around_node, \
+                        change_location_node, \
+                        inventory_node, \
+                        take_item_node, \
+                        drop_item_node, \
+                        delete_item_node, \
+                        execute_command_node, \
+                        command_name, \
+                        command, \
+                        examine_node, \
+                        become_node, \
+                        advance_property_node, \
+                        set_property_node, \
+                        dump_node, \
+                        set_trace_node
+from condition   import comparision_less_or_equal_condition, \
+                        comparision_greater_or_equal_condition, \
+                        comparision_not_equal_condition, \
+                        comparision_less_condition, \
+                        comparision_greater_condition, \
+                        comparision_equal_condition
 
 #-------------------------------------------------------------------------
 
@@ -391,8 +69,9 @@ class compiler(object):
         if elements[2] == []:
             raise error("At least one statement should be attached to action")
         names = command_name( elements[0] )
+        conditions = [ self._compile_single_condition(single_condition) for single_condition in elements[1] ]
         commands = [ self._compile_single_order(single_order) for single_order in elements[2] ]
-        return command(names, commands)
+        return command(names, conditions, commands)
 
     def _split_on_word(self, haystack, nedle):
         parts = haystack.split(nedle)
@@ -438,6 +117,14 @@ class compiler(object):
             return self._compile_del_item_node(text)
         if self._is_it_command(text, "EXEC"):
             return self._compile_exec_node(text)
+        if self._is_it_command(text, "BECOME"):
+            return self._compile_become_node(text)
+        if self._is_it_command(text, "MODIFY"):
+            return self._compile_modify_node(text)
+        if self._is_it_command(text, "DUMP"):
+            return self._compile_dump_node(text)
+        if self._is_it_command(text, "TRACE"):
+            return self._compile_trace_node(text)
         raise error("Unknown command: '" + text + "'")
             
     def _is_it_command(self, command_text, command_name):
@@ -500,6 +187,43 @@ class compiler(object):
         text = self._get_single_after_parameter(text, "EXEC")
         return execute_command_node(text)
         
+    def _compile_become_node(self, text):
+        text = self._get_single_after_parameter(text, "BECOME")
+        return become_node(text)
+        
+    def _compile_modify_node(self, text):
+        text = self._get_single_after_parameter(text, "MODIFY")
+        if self._is_it_command(text, "BY"):
+            texts = text.split("BY")
+            if len(texts) != 2:
+                raise error("MODIFY must have format: <property> BY <expression>")
+            property = self._compile_property_provider(texts[0].strip())
+            expression = self._compile_single_expression(texts[1].strip())
+            return advance_property_node(property, expression)
+        if self._is_it_command(text, "TO"):
+            texts = text.split("TO")
+            if len(texts) != 2:
+                raise error("MODIFY must have format: <property> TO <expression>")
+            property = self._compile_property_provider(texts[0].strip())
+            expression = self._compile_single_expression(texts[1].strip())
+            return set_property_node(property, expression)
+        else:
+            raise error("MODIFY must have format: <property> BY/TO <expression>")
+        
+    def _compile_dump_node(self, text):
+        text = self._get_single_after_parameter(text, "DUMP") 
+        if text == "":
+            raise error("DUMP need parameter - object to dump") 
+        provider = self._compile_dump_object_provider(text)
+        return dump_node(provider)
+        
+    def _compile_trace_node(self, text):
+        text = self._get_single_after_parameter(text, "TRACE")
+        if text == "":
+            raise error("TRACE need parameter - value or expression") 
+        expression = self._compile_single_expression(text)
+        return set_trace_node(expression)
+        
     def _compile_object_provider(self, text):
         if self._is_it_command(text, "NEW"):
             text = self._get_single_after_parameter(text, "NEW")
@@ -511,8 +235,176 @@ class compiler(object):
         elif self._is_it_command(text, "OBJECT"):
             self._check_no_parameters(text, "OBJECT")
             return object_parameter_provider()
+        elif self._is_it_command(text, "ITEM"):
+            self._check_no_parameters(text, "ITEM")
+            return item_parameter_provider()
         else:
             return constant_provider(text)
+    
+    def _compile_dump_object_provider(self, text):
+        if self._is_it_command(text, "LOCATION"):
+            self._check_no_parameters(text, "LOCATION")
+            return location_provider()
+        if self._is_it_command(text, "PLAYER"):
+            self._check_no_parameters(text, "PLAYER")
+            return player_provider()
+        if self._is_it_command(text, "REALM"):
+            self._check_no_parameters(text, "REALM")
+            return realm_provider()
+        if self._is_it_command(text, "SUBJECT"):
+            self._check_no_parameters(text, "SUBJECT")
+            return subject_parameter_provider()
+        if self._is_it_command(text, "OBJECT"):
+            self._check_no_parameters(text, "OBJECT")
+            return object_parameter_provider()
+        return constant_provider(text)
+    
+    def _compile_single_condition(self, text):
+        if self._is_it_command(text, "<="):
+            return self._compare_less_or_equal(text)
+        if self._is_it_command(text, ">="):
+            return self._compare_greater_or_equal(text)
+        if self._is_it_command(text, "!="):
+            return self._compare_not_equal(text)
+        if self._is_it_command(text, "<"):
+            return self._compare_less(text)
+        if self._is_it_command(text, ">"):
+            return self._compare_greater(text)
+        if self._is_it_command(text, "="):
+            return self._compare_equal(text)
+        raise error("'" + text + "' is not a condition")
+       
+    def _get_two_expressions(self, text, relation):
+        expressions = text.split(relation)
+        if len(expressions) != 2:
+            raise error ("'" + text + "' cannot be separated into two expressions")
+        if expressions[0] == "":
+            raise error ("Left expression cannot be empty")
+        if expressions[1] == "":
+            raise error ("Right expression cannot be empty")
+        return [self._compile_single_expression(expression.strip()) for expression in expressions]
+        
+    def _compare_less_or_equal(self, text):
+        expressions = self._get_two_expressions(text, "<=")
+        return comparision_less_or_equal_condition(expressions[0], expressions[1])
+    
+    def _compare_greater_or_equal(self, text):
+        expressions = self._get_two_expressions(text, ">=")
+        return comparision_greater_or_equal_condition(expressions[0], expressions[1])
+    
+    def _compare_not_equal(self, text):
+        expressions = self._get_two_expressions(text, "!=")
+        return comparision_not_equal_condition(expressions[0], expressions[1])
+    
+    def _compare_less(self, text):
+        expressions = self._get_two_expressions(text, "<")
+        return comparision_less_condition(expressions[0], expressions[1])
+    
+    def _compare_greater(self, text):
+        expressions = self._get_two_expressions(text, ">")
+        return comparision_greater_condition(expressions[0], expressions[1])
+    
+    def _compare_equal(self, text):
+        expressions = self._get_two_expressions(text, "=")
+        return comparision_equal_condition(expressions[0], expressions[1])
+    
+    def _split_on_operations(self, text, separator1, separator2):
+        splitting = text
+        result1 = []
+        result2 = []
+        while text != "":
+            pos1 = text.rfind(separator1)
+            pos2 = text.rfind(separator2)
+            if pos1 > pos2:
+                lpart = text[pos1+len(separator1):].strip()
+                if lpart == "":
+                    raise error("Expression '" + splitting + "' is not valid expression")
+                result1.append( lpart )
+                text = text[0:pos1].strip()
+                if text == "" and separator1 != "-":
+                    raise error("Expression '" + splitting + "' is not valid expression")
+            elif pos1 < pos2:
+                lpart = text[pos2+len(separator2):].strip()
+                if lpart == "":
+                    raise error("Expression '" + splitting + "' is not valid expression")
+                result2.append( lpart )
+                text = text[0:pos2].strip()
+                if text == "" and separator2 != "-":
+                    raise error("Expression '" + splitting + "' is not valid expression")
+            else:
+                result1.append(text)
+                text = "";
+        return (result1, result2);
+    
+    def _is_unit_after_split(self, result1, result2):
+        if result2 != []:
+            return False
+        if len(result1) != 1:
+            return False
+        return True
+    
+    def _compile_single_expression(self, text):
+        add, substract = self._split_on_operations(text, "+", "-")
+        if self._is_unit_after_split(add, substract):
+            return self._compile_multiplication(add[0])
+        else:
+            add = [self._compile_multiplication(part) for part in add]
+            substract = [self._compile_multiplication(part) for part in substract]
+            return sum_expression(add, substract)
+            
+    def _compile_multiplication(self, text):
+        mul, div = self._split_on_operations(text, "*", "/")
+        if self._is_unit_after_split(mul, div):
+            return self._compile_simple_expression(mul[0])
+        else:
+            mul = [self._compile_multiplication(part) for part in mul]
+            div = [self._compile_multiplication(part) for part in div]
+            return product_expression(mul, div)
+    
+    def _compile_simple_expression(self, text):
+        if text.find("DICE") == 0:
+            if len(text) == 4:
+                expr = constant_value_expression(6)
+            else:
+                expr = self._compile_simple_expression(text[4:].strip())
+            return dice_expression(expr)
+        try:
+            if text == "":
+                raise error("Expression cannot be empty")
+            constant = int(text)
+            return constant_value_expression(constant)
+        except Exception as e:
+            return self._compile_property_provider(text)
+            
+    def _compile_property_provider(self, text):
+        if self._is_it_command(text, "OBJECT"):
+            text = self._get_single_after_parameter(text, "OBJECT")
+            if text == "":
+                raise error("Property name must be specified.")
+            return object_property_provider(text)
+        if self._is_it_command(text, "SUBJECT"):
+            text = self._get_single_after_parameter(text, "SUBJECT")
+            if text == "":
+                raise error("Property name must be specified.")
+            return subject_property_provider(text)
+        if self._is_it_command(text, "LOCATION"):
+            text = self._get_single_after_parameter(text, "LOCATION")
+            if text == "":
+                raise error("Property name must be specified.")
+            return location_property_provider(text)
+        if self._is_it_command(text, "PLAYER"):
+            text = self._get_single_after_parameter(text, "PLAYER")
+            if text == "":
+                raise error("Property name must be specified.")
+            return player_property_provider(text)
+        if self._is_it_command(text, "ITEM"):
+            text = self._get_single_after_parameter(text, "ITEM")
+            if text == "":
+                raise error("Property name must be specified.")
+            return item_property_provider(text)
+        if text.find(" ") < 0:
+            raise error("At least two words are needed to specify item nad property names.")
+        return free_text_property_provider(text)
         
 #-------------------------------------------------------------------------
 

@@ -1,0 +1,12 @@
+[type]
+item
+
+[properties]
+weight = 8400
+
+[name]
+anvil
+
+[description]
+An anvil
+This anvil look to heavy to carry, but it is perfect for smithing

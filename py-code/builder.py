@@ -13,7 +13,8 @@ from data      import location, \
                       actions, \
                       item, \
                       items, \
-                      realm
+                      realm, \
+                      player
 from compiler  import compiler
 
 #-------------------------------------------------------------------------
@@ -264,9 +265,11 @@ class object_factory(object):
         try:
             return object_builder.get_object(
                         array_tokenizer(
-                            self._files_access.get_data_set(name) ), self )  
+                            self._files_access.get_data_set(name) ), self ) 
+        except error as err:
+            raise error("Cannot create object named '" + name + "' because " + err._text )
         except Exception as ex:
-            raise error("Cannot create object named '" + name + "'")
+            raise error("Cannot create object named '" + name + "' because '" + str(ex) + "'")
 
 #-------------------------------------------------------------------------
 

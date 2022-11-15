@@ -1,0 +1,18 @@
+[type]
+location
+
+[realm]
+realm
+
+[name]
+bank
+
+[description]
+It is an ordinary bank with one bank booth.
+It looks like primitive bank specialized with trading gold. You can sell or buy gold here, with acceptable fee. You see and exit on south.
+
+[actions]
+trade; exchange; sell WHEN gold value > 3; money value = 0 THEN PRINT You exchange gold for money.; TAKE NEW money; MODIFY money value BY gold value - 1; DEL gold
+trade; exchange; sell WHEN gold value > 3 THEN PRINT You exchange gold for money.; MODIFY money value BY gold value - 1; DEL gold
+trade; exchange; sell THEN PRINT You have no sufficient gold. You should dig some around.
+s; south; go south THEN GOTO city

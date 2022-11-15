@@ -1,0 +1,20 @@
+[type]
+location
+
+[realm]
+realm
+
+[name]
+crossroad
+
+[items]
+knife
+
+[description]
+You see a crossroad located close to the small city
+You are on a crossroad. The east road leads to abadoned mine. West road leads to the city.
+
+[actions]
+w; west; go west THEN GOTO city
+e; east; go east THEN GOTO gold mine
+

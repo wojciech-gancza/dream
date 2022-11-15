@@ -1,0 +1,9 @@
+[type]
+player
+
+[items]
+matches
+
+[properties]
+force = 1000
+mana = 15

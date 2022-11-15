@@ -8,9 +8,27 @@
 import                  unittest
 from errors      import error, \
                         break_action
-from compiler    import object_provider, \
+from expression  import object_provider, \
                         object_parameter_provider, \
-                        exit_node, \
+                        object_parameter_provider, \
+                        subject_parameter_provider, \
+                        constant_provider, \
+                        new_object_provider, \
+                        constant_value_expression, \
+                        sum_expression, \
+                        product_expression, \
+                        object_property_provider, \
+                        subject_property_provider, \
+                        location_property_provider, \
+                        player_property_provider, \
+                        item_property_provider, \
+                        free_text_property_provider, \
+                        item_parameter_provider, \
+                        dice_expression, \
+                        location_provider, \
+                        realm_provider, \
+                        player_provider
+from execution   import exit_node, \
                         translating_text_node, \
                         print_text_node, \
                         look_around_node, \
@@ -22,422 +40,23 @@ from compiler    import object_provider, \
                         execute_command_node, \
                         command_name, \
                         command, \
-                        compiler, \
-                        object_parameter_provider, \
-                        subject_parameter_provider, \
-                        constant_provider, \
-                        new_object_provider, \
-                        examine_node
+                        examine_node, \
+                        become_node, \
+                        advance_property_node, \
+                        set_property_node, \
+                        set_trace_node, \
+                        dump_node
+from condition   import comparision_less_or_equal_condition, \
+                        comparision_greater_or_equal_condition, \
+                        comparision_not_equal_condition, \
+                        comparision_less_condition, \
+                        comparision_greater_condition, \
+                        comparision_equal_condition
+from compiler    import compiler
 from data        import items, \
                         item
 from tools_test  import _game_mock
 
-#-------------------------------------------------------------------------
-
-class Test_object_provider(unittest.TestCase):
-
-    def test_unitialized_object(self):
-        node = object_provider()
-        self.assertEqual(node._name, "")
-        self.assertTrue(node._object is None)
-        self.assertFalse(node._already_taken)
-        
-    def test_initialization_with_existing_object(self):
-        node = object_provider()
-        game = _game_mock()
-        node.set_accessible_object_name("unisolated wire", game)
-        self.assertEqual(node._name, "wire")
-        self.assertTrue(node.peek_object() is game._pocket.peek_item("wire"))
-        
-    def test_initialization_with_non_existing_object(self):
-        node = object_provider()
-        game = _game_mock()
-        node.set_accessible_object_name("unwired isolation", game)
-        self.assertEqual(node._name, "unwired isolation")
-        self.assertTrue(node.peek_object() is None)
-        
-    def test_taking_existing_object(self):
-        node = object_provider()
-        game = _game_mock()
-        node.set_accessible_object_name("unisolated wire", game)
-        self.assertEqual(node._name, "wire")
-        wire = game._pocket.peek_item("wire")
-        self.assertTrue(node.take_object(game) is wire)
-        self.assertTrue(game._pocket.peek_item("wire") is None)
-        
-    def test_taking_non_existing_object(self):
-        node = object_provider()
-        game = _game_mock()
-        node.set_accessible_object_name("unwired isolation", game)
-        self.assertEqual(node._name, "unwired isolation")
-        self.assertTrue(node.take_object(game) is None)
-        
-#-------------------------------------------------------------------------
-
-class Test_object_parameter_provider(unittest.TestCase):
-
-    def test_object_parameter_provider_found(self):
-        node = object_parameter_provider()
-        game = _game_mock()
-        node.set_parameters(game, "wire connector")
-        self.assertEqual(node.get_name(), "wire connector")
-        self.assertTrue(node.peek_object() is None)
-
-    def test_object_parameter_provider_not_found(self):
-        node = object_parameter_provider()
-        game = _game_mock()
-        node.set_parameters(game, " connecting wire")
-        self.assertEqual(node.get_name(), "wire")
-        self.assertTrue(type(node.peek_object()) is item)
-
-    def test_object_parameter_provider_to_string(self):
-        node = object_parameter_provider()
-        self.assertEqual(str(node), "OBJECT")
-
-#-------------------------------------------------------------------------
-
-class Test_subject_parameter_provider(unittest.TestCase):
-
-    def test_subject_parameter_provider_found(self):
-        node = subject_parameter_provider()
-        game = _game_mock()
-        node.set_parameters(game, "wire connector")
-        self.assertEqual(node.get_name(), "wire")
-        self.assertTrue(type(node.peek_object()) is item)
-
-    def test_subject_parameter_provider_not_found(self):
-        node = subject_parameter_provider()
-        game = _game_mock()
-        node.set_parameters(game, "connecting wire")
-        self.assertEqual(node.get_name(), "connecting wire")
-        self.assertTrue(node.peek_object() is None)
-
-    def test_subject_parameter_provider_to_string(self):
-        node = subject_parameter_provider()
-        self.assertEqual(str(node), "SUBJECT")
-
-#-------------------------------------------------------------------------
-
-class Test_constant_provider(unittest.TestCase):
-
-    def test_constant_provider_found(self):
-        node = constant_provider("wire")
-        game = _game_mock()
-        node.set_parameters(game, "strange connector")
-        self.assertEqual(node.get_name(), "wire")
-        self.assertTrue(type(node.peek_object()) is item)
-
-    def test_constant_provider_not_found(self):
-        node = constant_provider("gizmo")
-        game = _game_mock()
-        node.set_parameters(game, "wire wire wire")
-        self.assertEqual(node.get_name(), "gizmo")
-        self.assertTrue(node.peek_object() is None)
-
-    def test_constant_provider_to_string(self):
-        node = constant_provider("some text")
-        self.assertEqual(str(node), "some text")
-
-#-------------------------------------------------------------------------
-
-class Test_new_provider(unittest.TestCase):
-
-    def test_new_provider_found(self):
-        game = _game_mock()
-        game._pocket.put_item( game._factory.get_object("box of matches") )
-        obj = new_object_provider(constant_provider("mathes"))
-        obj.set_parameters(game, "")
-        self.assertEqual(obj.get_name(), "box of matches")
-        self.assertTrue(type(obj.peek_object()) is item)
-    
-    def test_new_provider_not_found(self):
-        node = new_object_provider(constant_provider("gizmo"))
-        game = _game_mock()
-        node.set_parameters(game, "wire wire wire")
-        self.assertEqual(node.get_name(), "gizmo")
-        self.assertTrue(type(node.peek_object()) is item)
-    
-    def test_new_provider_nonexisting_object(self):
-        node = new_object_provider(constant_provider("gizmolada"))
-        game = _game_mock()
-        node.set_parameters(game, "wire wire wire")
-        self.assertEqual(node.get_name(), "gizmolada")
-        self.assertTrue(node.peek_object() is None)
-    
-    def test_new_provider_copies_item(self):
-        game = _game_mock()
-        game._pocket.put_item( game._factory.get_object("box of matches") )
-        obj = new_object_provider(constant_provider("mathes"))
-        obj.set_parameters(game, "")
-        self.assertEqual(obj.get_name(), "box of matches")
-        self.assertTrue(type(obj.take_object(game)) is item)
-        self.assertFalse(game._pocket.peek_item("box of matches") is None)
-
-    def test_new_creating_item_to_string(self):
-        obj = new_object_provider(constant_provider("box of matches"))
-        self.assertEqual(str(obj), "NEW box of matches")
-
-#-------------------------------------------------------------------------
-
-class Test_exit_node(unittest.TestCase):
-    
-    def test_of_exit_node(self):
-        node = exit_node()
-        game = _game_mock()
-        node.run(game, "")
-        self.assertEqual(game.log, "Stop was called\n")
-        
-    def test_of_exit_node_serialization(self):
-        node = exit_node()
-        self.assertEqual(str(node), "EXIT")
-        
-#-------------------------------------------------------------------------
-
-class Test_translating_text_node(unittest.TestCase):
-
-    def test_of_keeping_text(self):
-        node = translating_text_node("Just a text")
-        game = _game_mock()
-        text = node._get_text(game, "bended wire")
-        self.assertEqual(text, "Just a text")
-
-    def test_of_translation_of_OBJECT(self):
-        node = translating_text_node("The OBJECT is here")
-        game = _game_mock()
-        text = node._get_text(game, "bended wire")
-        self.assertEqual(text, "The lockpick is here")
-
-#-------------------------------------------------------------------------
-
-class Test_print_text_node(unittest.TestCase):
-
-    def test_of_serializing_node(self):
-        node = print_text_node("This is a text")
-        self.assertEqual(str(node), "PRINT This is a text")
-        
-    def test_of_execution(self):
-        node = print_text_node("This is a text")
-        game = _game_mock()
-        node.run(game, "")
-        self.assertEqual(game._console._buffer, "This is a text\n")
-        
-    def test_of_execution_with_current_item_name(self):
-        node = print_text_node("This is OBJECT")
-        game = _game_mock()
-        node.run(game, "bended wire")
-        self.assertEqual(game._console._buffer, "This is lockpick\n")
-
-#-------------------------------------------------------------------------
-
-class Test_look_around_node(unittest.TestCase):
-
-    def test_of_serializing_node(self):
-        node = look_around_node()
-        self.assertEqual(str(node), "LOOK")
-        
-    def test_of_execution(self):
-        node = look_around_node()
-        game = _game_mock()
-        node.run(game, "")
-        self.assertEqual(game._console._buffer, "long description of location\n")
-        
-#-------------------------------------------------------------------------
-
-class Test_change_location_node(unittest.TestCase):
-
-    def test_of_serializing_node(self):
-        node = change_location_node('somewhere')
-        self.assertEqual(str(node), "GOTO somewhere")
-
-    def test_of_execution(self):
-        node = change_location_node("mansion hall")
-        game = _game_mock()
-        node.run(game, "")
-        self.assertEqual(game._console._buffer, "You are in mansion hall\nYou see doors around however main door located on south looks not real.\n")
-        
-#-------------------------------------------------------------------------
-
-class Test_inventory_node(unittest.TestCase):
-
-    def test_of_serializing_node(self):
-        node = inventory_node()
-        self.assertEqual(str(node), "POCKET")
-
-    def test_of_execution_with_filled_inventory(self):
-        node = inventory_node()
-        game = _game_mock()
-        node.run(game, "")
-        self.assertEqual(game._console._buffer, "You have:\n - Lockpick made of thin shiny wire.\n - Short piece of shiny wire.\n")
-        
-    def test_of_execution_with_empty_inventory(self):
-        node = inventory_node()
-        game = _game_mock()
-        game._pocket = items()
-        node.run(game, "")
-        self.assertEqual(game._console._buffer, "You have nothing.\n")
-        
-#-------------------------------------------------------------------------
-
-class Test_examine_node(unittest.TestCase):
-
-    def test_of_serializing_node(self):
-        node = examine_node(constant_provider("xyz"))
-        self.assertEqual(str(node), "EXAMINE xyz")
-    
-    def test_of_examining_object(self):
-        node = examine_node(constant_provider("unisolated wire"))
-        game = _game_mock()
-        node.run(game, "")
-        self.assertEqual(game._console._buffer, 
-            "This is a piece of wire. It is about 20cm long and it looks like " \
-            "made of aluminium. It is preety hard to bend, but bendable in " \
-            "bare fingers.\n")
-        
-    def test_of_examining_nonexisting_object(self):
-        node = examine_node(constant_provider("wired unisolation"))
-        game = _game_mock()
-        node.run(game, "")
-        self.assertEqual(game._console._buffer, "I see no wired unisolation\n")
-    
-#-------------------------------------------------------------------------
-
-class Test_take_item_node(unittest.TestCase):
-
-    def test_of_serializing_node(self):
-        node = take_item_node(constant_provider("xyz"))
-        self.assertEqual(str(node), "TAKE xyz")
-    
-    def test_of_examining_object(self):
-        node = take_item_node(constant_provider("gizmo"))
-        game = _game_mock()
-        game._location._items.put_item( game._factory.get_object("gizmo") )
-        self.assertFalse(game._location._items.peek_item("gizmo") is None)
-        self.assertTrue(game._pocket.peek_item("gizmo") is None)
-        node.run(game, "")
-        self.assertTrue(game._location._items.peek_item("gizmo") is None)
-        self.assertFalse(game._pocket.peek_item("gizmo") is None)
-        
-    def test_of_examining_nonexisting_object(self):
-        node = take_item_node(constant_provider("wired unisolation"))
-        game = _game_mock()
-        node.run(game, "")
-        self.assertEqual(game._console._buffer, "I see no wired unisolation\n")
-
-#-------------------------------------------------------------------------
-
-class Test_drop_item_node(unittest.TestCase):
-
-    def test_of_serializing_node(self):
-        node = drop_item_node(constant_provider("xyz"))
-        self.assertEqual(str(node), "DROP xyz")
-
-    def test_of_examining_object(self):
-        node = drop_item_node(constant_provider("wire"))
-        game = _game_mock()
-        self.assertTrue(game._location._items.peek_item("wire") is None)
-        self.assertFalse(game._pocket.peek_item("wire") is None)
-        node.run(game, "")
-        self.assertFalse(game._location._items.peek_item("wire") is None)
-        self.assertTrue(game._pocket.peek_item("wire") is None)
-        
-    def test_of_examining_nonexisting_object(self):
-        node = drop_item_node(constant_provider("wired unisolation"))
-        game = _game_mock()
-        node.run(game, "")
-        self.assertEqual(game._console._buffer, "I see no wired unisolation\n")
-
-#-------------------------------------------------------------------------
-
-class Test_delete_item_node(unittest.TestCase):
-
-    def test_of_serializing_node(self):
-        node = delete_item_node(constant_provider("xyz"))
-        self.assertEqual(str(node), "DEL xyz")
-
-    def test_of_examining_object(self):
-        node = delete_item_node(constant_provider("wire"))
-        game = _game_mock()
-        self.assertTrue(game._location._items.peek_item("wire") is None)
-        self.assertFalse(game._pocket.peek_item("wire") is None)
-        node.run(game, "")
-        self.assertTrue(game._location._items.peek_item("wire") is None)
-        self.assertTrue(game._pocket.peek_item("wire") is None)
-        
-    def test_of_examining_nonexisting_object(self):
-        node = delete_item_node(constant_provider("wired unisolation"))
-        game = _game_mock()
-        node.run(game, "")
-        self.assertEqual(game._console._buffer, "I see no wired unisolation\n")
-  
-#-------------------------------------------------------------------------
-
-class Test_execute_command_node(unittest.TestCase):
-
-    def test_of_serializing_node(self):
-        node = execute_command_node("look")
-        self.assertEqual(str(node), "EXEC look")
-
-    def test_of_execution_proper_command(self):
-        node = execute_command_node("look")
-        game = _game_mock()
-        game._location = game._factory.get_object("test location")
-        node.run(game, "")
-        self.assertEqual(game._console._buffer, "It is too dark to see anything. You should relay or other senses.\n")
-        
-    def test_of_execution_private_command(self):
-        node = execute_command_node("_ run something")
-        game = _game_mock()
-        game._location = game._factory.get_object("test location")
-        node.run(game, "")
-        self.assertEqual(game._console._buffer, "Something was running\n")
-       
-    def test_of_examining_nonexisting_object(self):
-        node = execute_command_node("nonexisting command")
-        game = _game_mock()
-        try:
-            node.run(game, "")
-            self.assertTrue(False)
-        except break_action: 
-            pass
-        except:
-            self.assertTrue(False)
-  
-#-------------------------------------------------------------------------
-
-class Test_command_name(unittest.TestCase):
-
-    def test_of_matching_simple_command_text(self):
-        names = command_name(["wake up", "die"])
-        self.assertEqual(7, names.length_of_a_command_if_match("wake up"))
-        self.assertEqual(0, names.length_of_a_command_if_match("resurect"))
-        self.assertEqual(3, names.length_of_a_command_if_match("die"))
-        self.assertEqual(0, names.length_of_a_command_if_match("give up"))
-        
-    def test_of_matching_whole_word(self):
-        names = command_name(["n"])
-        self.assertEqual(0, names.length_of_a_command_if_match("ne"))
-        self.assertEqual(0, names.length_of_a_command_if_match("ne 123"))
-
-    def test_of_names_serialization(self):
-        names = command_name(["wake up", "die", "sayonara"])
-        self.assertEqual(str(names), "wake up; die; sayonara")
-        
-#-------------------------------------------------------------------------
-
-class Test_command(unittest.TestCase):
-    
-    def test_executing_command_1(self):
-        cmd = command(command_name(["good by", "sayonara"]), [exit_node()] )
-        game = _game_mock()
-        self.assertFalse( cmd.try_execute("hello", game) )
-        self.assertEqual( game.log, "" )
-        self.assertTrue( cmd.try_execute("sayonara", game) )
-        self.assertEqual( game.log, "Stop was called\n" )
-    
-    def test_serializing_command(self):
-        cmd = command(command_name(["good by", "sayonara"]), [exit_node()] )
-        self.assertEqual(str(cmd), "good by; sayonara THEN EXIT")
-      
 #-------------------------------------------------------------------------
 
 class Test_compiler(unittest.TestCase):
@@ -630,6 +249,21 @@ class Test_compiler(unittest.TestCase):
         obj = comp._compile_single_order("EXEC look")
         self.assertTrue(type(obj) is execute_command_node)
 
+    def test_compile_single_order_7(self):
+        comp = compiler()
+        obj = comp._compile_single_order("BECOME knight")
+        self.assertTrue(type(obj) is become_node)
+
+    def test_compile_single_order_8(self):
+        comp = compiler()
+        obj = comp._compile_single_order("MODIFY ITEM property BY 100")
+        self.assertTrue(type(obj) is advance_property_node)
+
+    def test_compile_single_order_9(self):
+        comp = compiler()
+        obj = comp._compile_single_order("MODIFY ITEM property TO 100")
+        self.assertTrue(type(obj) is set_property_node)
+
     def test_compile_goto_node(self):
         comp = compiler()
         obj = comp._compile_goto_node("GOTO abc")
@@ -645,6 +279,11 @@ class Test_compiler(unittest.TestCase):
         comp = compiler()
         obj = comp._compile_object_provider("SUBJECT")
         self.assertTrue(type(obj) is subject_parameter_provider)
+        
+    def test_compile_object_provider_item(self):
+        comp = compiler()
+        obj = comp._compile_object_provider("ITEM")
+        self.assertTrue(type(obj) is item_parameter_provider)
         
     def test_compile_object_provider_constant(self):
         comp = compiler()
@@ -688,5 +327,491 @@ class Test_compiler(unittest.TestCase):
         self.assertTrue(type(obj) is execute_command_node)
         self.assertEqual(obj._text, "look")
         
+    def test_compilation_become_node(self):
+        comp = compiler()
+        obj = comp._compile_become_node("BECOME knight")
+        self.assertTrue(type(obj) is become_node)
+        self.assertEqual(obj._hero_type, "knight")
+        
+    def test_of_compile_modify_node_1(self):
+        comp = compiler()
+        node = comp._compile_modify_node("MODIFY anvil weight BY 100")
+        self.assertTrue(type(node) is advance_property_node)
+        self.assertTrue(type(node._expression) is constant_value_expression)
+        self.assertEqual(node._expression._value, 100)
+        self.assertTrue(type(node._property) is free_text_property_provider)
+        self.assertEqual(node._property._full_property_name, "anvil weight")
+    
+    def test_of_compile_modify_node_2(self):
+        comp = compiler()
+        node = comp._compile_modify_node("MODIFY anvil weight TO 100")
+        self.assertTrue(type(node) is set_property_node)
+        self.assertTrue(type(node._expression) is constant_value_expression)
+        self.assertEqual(node._expression._value, 100)
+        self.assertTrue(type(node._property) is free_text_property_provider)
+        self.assertEqual(node._property._full_property_name, "anvil weight")
+    
+    def test_of_compile_modify_node_error_1(self):
+        comp = compiler()
+        try:
+            node = comp._compile_modify_node("MODIFY anvil weight 100")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: MODIFY must have format: <property> BY/TO <expression>")
+        except Exception:
+            self.assertTrue(False)      
+    
+    def test_of_compile_modify_node_error_2(self):
+        comp = compiler()
+        try:
+            node = comp._compile_modify_node("MODIFY TO anvil weight TO 100")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: MODIFY must have format: <property> TO <expression>")
+        except Exception:
+            self.assertTrue(False)      
+    
+    def test_of_compile_modify_node_error_3(self):
+        comp = compiler()
+        try:
+            node = comp._compile_modify_node("MODIFY TO 100")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: At least two words are needed to specify item nad property names.")
+        except Exception:
+            self.assertTrue(False)      
+    
+    def test_of_compile_modify_node_error_4(self):
+        comp = compiler()
+        try:
+            node = comp._compile_modify_node("MODIFY TO anvil weight TO")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: MODIFY must have format: <property> TO <expression>")
+        except Exception:
+            self.assertTrue(False)      
+    
+    def test_get_two_expressions(self):
+        comp = compiler()
+        result = comp._get_two_expressions("123 XXX 654", "XXX")
+        self.assertEqual(result[0].value(None, None), 123)
+        self.assertEqual(result[1].value(None, None), 654)
+        
+    def test_get_two_expressions_missing_parameter_1(self):
+        comp = compiler()
+        try:
+            result = comp._get_two_expressions("123 XXX", "XXX")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Right expression cannot be empty")
+        except Exception:
+            self.assertTrue(False)
+        
+    def test_get_two_expressions_missing_parameter_1(self):
+        comp = compiler()
+        try:
+            result = comp._get_two_expressions("XXX 546", "XXX")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Left expression cannot be empty")
+        except Exception:
+            self.assertTrue(False)
+        
+    def test_get_two_expressions_wrong_expression(self):
+        comp = compiler()
+        result = comp._get_two_expressions("sometgi sdsd XXX 546", "XXX")
+        self.assertTrue(type(result[0]) == free_text_property_provider)
+        
+    def test_of_compile_single_conditions_1(self):
+        comp = compiler()
+        result = comp._compile_single_condition("1<2")
+        self.assertTrue(type(result) is comparision_less_condition)
+        
+    def test_of_compile_single_conditions_2(self):
+        comp = compiler()
+        result = comp._compile_single_condition("1>2")
+        self.assertTrue(type(result) is comparision_greater_condition)
+        
+    def test_of_compile_single_conditions_3(self):
+        comp = compiler()
+        result = comp._compile_single_condition("1=2")
+        self.assertTrue(type(result) is comparision_equal_condition)
+        
+    def test_of_compile_single_conditions_4(self):
+        comp = compiler()
+        result = comp._compile_single_condition("1<=2")
+        self.assertTrue(type(result) is comparision_less_or_equal_condition)
+        
+    def test_of_compile_single_conditions_5(self):
+        comp = compiler()
+        result = comp._compile_single_condition("1>=2")
+        self.assertTrue(type(result) is comparision_greater_or_equal_condition)
+        
+    def test_of_compile_single_conditions_6(self):
+        comp = compiler()
+        result = comp._compile_single_condition("1!=2")
+        self.assertTrue(type(result) is comparision_not_equal_condition)
+        
+    def test_of_compile_single_conditions_error_1(self):
+        comp = compiler()
+        try:
+            result = comp._compile_single_condition("sometgiNG >")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Right expression cannot be empty")
+        except Exception:
+            self.assertTrue(False)
+
+    def test_of_compile_single_conditions_error_2(self):
+        comp = compiler()
+        try:
+            result = comp._compile_single_condition("=sometgiNG")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Left expression cannot be empty")
+        except Exception:
+            self.assertTrue(False)
+
+    def test_of_compile_single_conditions_error_3(self):
+        comp = compiler()
+        try:
+            result = comp._compile_single_condition("<>=>>")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: At least two words are needed to specify item nad property names.")
+        except Exception:
+            self.assertTrue(False)
+
+    def test_of_compile_single_conditions_error_4(self):
+        comp = compiler()
+        try:
+            result = comp._compile_single_condition("=")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Left expression cannot be empty")
+        except Exception:
+            self.assertTrue(False)
+
+    def test_of_compile_single_conditions_error_5(self):
+        comp = compiler()
+        try:
+            result = comp._compile_single_condition("sometgiNG XXX 546")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: 'sometgiNG XXX 546' is not a condition")
+        except Exception:
+            self.assertTrue(False)
+
+    def test_of_compare_less(self):
+        comp = compiler()
+        result = comp._compare_less("1<2")
+        self.assertTrue(type(result) is comparision_less_condition)
+        self.assertEqual(result._left.value(None, None), 1)
+        self.assertEqual(result._right.value(None, None), 2)
+            
+    def test_of_compare_greater(self):
+        comp = compiler()
+        result = comp._compare_greater("1>2")
+        self.assertTrue(type(result) is comparision_greater_condition)
+        self.assertEqual(result._left.value(None, None), 1)
+        self.assertEqual(result._right.value(None, None), 2)
+            
+    def test_of_compare_equal(self):
+        comp = compiler()
+        result = comp._compare_equal("1=2")
+        self.assertTrue(type(result) is comparision_equal_condition)
+        self.assertEqual(result._left.value(None, None), 1)
+        self.assertEqual(result._right.value(None, None), 2)
+        
+    def test_of_compare_less_or_equal(self):
+        comp = compiler()
+        result = comp._compare_less_or_equal("1<=2")
+        self.assertTrue(type(result) is comparision_less_or_equal_condition)
+        self.assertEqual(result._left.value(None, None), 1)
+        self.assertEqual(result._right.value(None, None), 2)
+        
+    def test_of_compare_greater_or_equal(self):
+        comp = compiler()
+        result = comp._compare_greater_or_equal("1>=2")
+        self.assertTrue(type(result) is comparision_greater_or_equal_condition)
+        self.assertEqual(result._left.value(None, None), 1)
+        self.assertEqual(result._right.value(None, None), 2)
+            
+    def test_of_compare_not_equal(self):
+        comp = compiler()
+        result = comp._compare_not_equal("1!=2")
+        self.assertTrue(type(result) is comparision_not_equal_condition)
+        self.assertEqual(result._left.value(None, None), 1)
+        self.assertEqual(result._right.value(None, None), 2)
+            
+    def test_of_split_on_operations_1(self):
+        comp = compiler()
+        result = comp._split_on_operations("123+34-223+12-54", "+", "-")
+        self.assertEqual(result, ( ["12", "34", "123"], ["54", "223"] ) )
+        
+    def test_of_split_on_operations_2(self):
+        comp = compiler()
+        result = comp._split_on_operations("123+34+223", "+", "-")
+        self.assertEqual(result, ( ["223", "34", "123"], [ ] ) )
+        
+    def test_of_split_on_operations_3(self):
+        comp = compiler()
+        result = comp._split_on_operations("-223", "+", "-")
+        self.assertEqual(result, ( [ ], [ "223" ] ) )
+        
+    def test_of_is_unit_after_split_1(self):
+        comp = compiler()
+        self.assertTrue(comp._is_unit_after_split([1], []))
+        self.assertFalse(comp._is_unit_after_split([], [1]))
+        self.assertFalse(comp._is_unit_after_split([], [1, 1]))
+        self.assertFalse(comp._is_unit_after_split([1], [1]))
+        
+    def test_of_compile_simple_expression(self):
+        comp = compiler()
+        obj = comp._compile_simple_expression("123")
+        self.assertTrue(type(obj) == constant_value_expression)
+        self.assertEqual(obj.value(None, None), 123)
+        
+    def test_of_compile_simple_expression(self):
+        comp = compiler()
+        obj = comp._compile_simple_expression("x123 sss")
+        self.assertTrue(type(obj) == free_text_property_provider)
+        self.assertEqual(obj._property_name, "x123 sss")
+
+    def test_of_compile_multiplication(self):
+        comp = compiler()
+        obj = comp._compile_multiplication("20 * 50 / 4 * 5 / 10")
+        self.assertTrue(type(obj) == product_expression)
+        self.assertEqual(len(obj._mul), 3)
+        self.assertEqual(len(obj._div), 2)
+        self.assertEqual(obj.value(None, None), 125)
+        
+    def test_of_simple_multiplication(self):
+        comp = compiler()
+        obj = comp._compile_multiplication("201")
+        self.assertTrue(type(obj) == constant_value_expression)
+        self.assertEqual(obj.value(None, None), 201)
+        
+    def test_of_compile_single_expression(self):
+        comp = compiler()
+        obj = comp._compile_single_expression("200-120+60*2-20+332")
+        self.assertTrue(type(obj) == sum_expression)
+        self.assertEqual(len(obj._add), 3)
+        self.assertEqual(len(obj._sub), 2)
+        self.assertEqual(obj.value(None, None), 512)
+        
+    def test_of_compile_single_expression_with_multiplication(self):
+        comp = compiler()
+        obj = comp._compile_single_expression("3*4")
+        self.assertTrue(type(obj) == product_expression)
+        self.assertEqual(obj.value(None, None), 12)
+        
+    def test_of_compile_expression_error_1(self):
+        comp = compiler()
+        try:
+            obj = comp._compile_single_expression("3 * * 2")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Expression '3 * * 2' is not valid expression")
+        
+    def test_of_compile_expression_error_2(self):
+        comp = compiler()
+        try:
+            obj = comp._compile_single_expression("3 + + 2")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Expression '3 + + 2' is not valid expression")
+        
+    def test_of_compile_object_property_provider(self):
+        comp = compiler()
+        obj = comp._compile_property_provider("OBJECT weigth")
+        self.assertTrue(type(obj) is object_property_provider)
+        self.assertEqual(obj._property_name, "weigth")
+        
+    def test_of_compile_object_property_provider_error(self):
+        comp = compiler()
+        try:
+            obj = comp._compile_property_provider("OBJECT")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Property name must be specified.")
+        except Exception:
+            self.assertTrue(False)
+
+    def test_of_compile_subject_property_provider(self):
+        comp = compiler()
+        obj = comp._compile_property_provider("SUBJECT weigth")
+        self.assertTrue(type(obj) is subject_property_provider)
+        self.assertEqual(obj._property_name, "weigth")
+     
+    def test_of_compile_subject_property_provider_error(self):
+        comp = compiler()
+        try:
+            obj = comp._compile_property_provider("SUBJECT")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Property name must be specified.")
+        except Exception:
+            self.assertTrue(False)
+     
+    def test_of_compile_location_property_provider(self):
+        comp = compiler()
+        obj = comp._compile_property_provider("LOCATION weigth")
+        self.assertTrue(type(obj) is location_property_provider)
+        self.assertEqual(obj._property_name, "weigth")
+     
+    def test_of_compile_location_property_provider_error(self):
+        comp = compiler()
+        try:
+            obj = comp._compile_property_provider("LOCATION")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Property name must be specified.")
+        except Exception:
+            self.assertTrue(False)
+     
+    def test_of_compile_player_property_provider(self):
+        comp = compiler()
+        obj = comp._compile_property_provider("PLAYER weigth")
+        self.assertTrue(type(obj) is player_property_provider)
+        self.assertEqual(obj._property_name, "weigth")
+     
+    def test_of_compile_player_property_provider_error(self):
+        comp = compiler()
+        try:
+            obj = comp._compile_property_provider("PLAYER")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Property name must be specified.")
+        except Exception:
+            self.assertTrue(False)
+     
+    def test_of_compile_item_property_provider(self):
+        comp = compiler()
+        obj = comp._compile_property_provider("ITEM weigth")
+        self.assertTrue(type(obj) is item_property_provider)
+        self.assertEqual(obj._property_name, "weigth")
+     
+    def test_of_compile_item_property_provider_error(self):
+        comp = compiler()
+        try:
+            obj = comp._compile_property_provider("ITEM")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Property name must be specified.")
+        except Exception:
+            self.assertTrue(False)
+     
+    def test_of_free_text_property_provider(self):
+        comp = compiler()
+        obj = comp._compile_property_provider("anvil weigth")
+        self.assertTrue(type(obj) is free_text_property_provider)
+        self.assertEqual(obj._property_name, "anvil weigth")
+     
+    def test_of_free_text_property_provider_error(self):
+        comp = compiler()
+        try:
+            obj = comp._compile_property_provider("anvil")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: At least two words are needed to specify item nad property names.")
+        except Exception:
+            self.assertTrue(False)
+     
+    def test_of_compile_dice_expression_1(self):
+        comp = compiler()
+        expr = comp._compile_simple_expression("DICE")
+        self.assertTrue(type(expr) is dice_expression)
+        self.assertTrue(type(expr._inner_expression) is constant_value_expression)
+        self.assertEqual(expr._inner_expression._value, 6)
+     
+    def test_of_compile_dice_expression_2(self):
+        comp = compiler()
+        expr = comp._compile_simple_expression("DICE 20")
+        self.assertTrue(type(expr) is dice_expression)
+        self.assertTrue(type(expr._inner_expression) is constant_value_expression)
+        self.assertEqual(expr._inner_expression._value, 20)
+     
+    def test_of_compile_dump_node_1(self):
+        comp = compiler()
+        node = comp._compile_single_order("DUMP item")
+        self.assertTrue(type(node) is dump_node)
+        self.assertTrue(type(node._object_provider) is constant_provider)
+        self.assertEqual(node._object_provider._constant_name, "item")
+        
+    def test_of_compile_dump_node_2(self):
+        comp = compiler()
+        node = comp._compile_dump_node("DUMP item")
+        self.assertTrue(type(node) is dump_node)
+        self.assertTrue(type(node._object_provider) is constant_provider)
+        self.assertEqual(node._object_provider._constant_name, "item")
+        
+    def test_of_compile_dump_node_3_error(self):
+        comp = compiler()
+        try:
+            node = comp._compile_dump_node("DUMP")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: DUMP need parameter - object to dump")
+        
+    def test_of_compile_trace_node_1(self):
+        comp = compiler()
+        node = comp._compile_trace_node("TRACE 1")
+        self.assertTrue(type(node) is set_trace_node)
+        self.assertTrue(type(node._expression) is constant_value_expression)
+        self.assertEqual(node._expression._value, 1)
+        
+    def test_of_compile_trace_node_2(self):
+        comp = compiler()
+        node = comp._compile_single_order("TRACE 1")
+        self.assertTrue(type(node) is set_trace_node)
+        self.assertTrue(type(node._expression) is constant_value_expression)
+        self.assertEqual(node._expression._value, 1)
+        
+    def test_of_compile_trace_node_3_error(self):
+        comp = compiler()
+        try:
+            node = comp._compile_single_order("TRACE")
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: TRACE need parameter - value or expression")
+        
+    def test_of_compile_trace_node_4_error(self):
+        comp = compiler()
+        node = comp._compile_single_order("TRACE 1 2 3")
+        self.assertTrue(type(node._expression) is free_text_property_provider)
+        self.assertEqual(node._expression._property_name, "1 2 3")
+        
+    def test_of_compile_dump_location_provider(self):
+        comp = compiler()
+        prov = comp._compile_dump_object_provider("LOCATION")
+        self.assertTrue(type(prov) is location_provider)
+        
+    def test_of_compile_dump_realm_provider(self):
+        comp = compiler()
+        prov = comp._compile_dump_object_provider("REALM")
+        self.assertTrue(type(prov) is realm_provider)
+        
+    def test_of_compile_dump_player_provider(self):
+        comp = compiler()
+        prov = comp._compile_dump_object_provider("PLAYER")
+        self.assertTrue(type(prov) is player_provider)
+        
+    def test_of_compile_dump_object_provider(self):
+        comp = compiler()
+        prov = comp._compile_dump_object_provider("OBJECT")
+        self.assertTrue(type(prov) is object_parameter_provider)
+        
+    def test_of_compile_dump_subject_provider(self):
+        comp = compiler()
+        prov = comp._compile_dump_object_provider("SUBJECT")
+        self.assertTrue(type(prov) is subject_parameter_provider)
+        
+    def test_of_compile_dump_constant_provider(self):
+        comp = compiler()
+        prov = comp._compile_dump_object_provider("gold")
+        self.assertTrue(type(prov) is constant_provider)
+        
+    
 #-------------------------------------------------------------------------
 

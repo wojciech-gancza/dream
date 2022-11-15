@@ -14,9 +14,10 @@ from data        import description, \
                         item, \
                         items, \
                         location, \
-                        realm
+                        realm, \
+                        player
 from tools       import translator
-from compiler    import command, \
+from execution   import command, \
                         exit_node, \
                         command_name, \
                         print_text_node
@@ -84,6 +85,18 @@ class Test_property(unittest.TestCase):
         prop.add(43)
         self.assertEqual(prop.get(), 166)
         
+    def test_of_overwrite_of_cumulating_values(self):
+        prop = property()
+        prop.add(123)
+        prop.add(43)
+        prop.set(991)
+        self.assertEqual(prop.get(), 991)
+        
+    def test_of_set_of_value(self):
+        prop = property()
+        prop.set(991)
+        self.assertEqual(prop.get(), 991)
+        
     def test_of_upper_limit(self):
         prop = property()
         prop.add(8000)
@@ -146,15 +159,15 @@ class Test_actions(unittest.TestCase):
         
     def test_serialization_of_filled_actions(self):
         act = actions()
-        act.add_action(command(command_name(["Hello"]), [exit_node()]))
-        act.add_action(command(command_name(["Bye"]), [exit_node()]))
+        act.add_action(command(command_name(["Hello"]), [], [exit_node()]))
+        act.add_action(command(command_name(["Bye"]), [], [exit_node()]))
         self.assertEqual(str(act), "[actions]\nHello THEN EXIT\nBye THEN EXIT\n")
         
     def test_execution_of_filled_actions(self):
         act = actions()
         game = _game_mock()
-        act.add_action(command(command_name(["Hello"]), [exit_node()]))
-        act.add_action(command(command_name(["Bye"]), [exit_node()]))
+        act.add_action(command(command_name(["Hello"]), [], [exit_node()]))
+        act.add_action(command(command_name(["Bye"]), [], [exit_node()]))
         self.assertEqual(str(act), "[actions]\nHello THEN EXIT\nBye THEN EXIT\n")
         self.assertTrue( act.try_execute("Hello", game) )
         self.assertFalse( act.try_execute("Hail", game) )
@@ -167,13 +180,13 @@ class Test_item(unittest.TestCase):
 
     def test_of_serialization_of_empty_item(self):
         it = item()
-        self.assertEqual(str(it), "[type]\nlocation\n\n[name]\n-nothing-\n\n[properties]\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\n")
+        self.assertEqual(str(it), "[type]\nitem\n\n[name]\n-nothing-\n\n[properties]\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\n")
         
     def test_of_filled_item(self):
         it = item()
         it._name.set_names(["a", "b", "c"])
         it._properties.add("x", 12)
-        self.assertEqual(str(it), "[type]\nlocation\n\n[name]\na\nb\nc\n\n[properties]\nx = 12\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\n")
+        self.assertEqual(str(it), "[type]\nitem\n\n[name]\na\nb\nc\n\n[properties]\nx = 12\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\n")
       
 #-------------------------------------------------------------------------
 
@@ -256,7 +269,7 @@ class Test_inventory(unittest.TestCase):
     def test_execution_of_items_from_collection(self):
         it = items()
         item1 = item()
-        act = command(command_name(["x"]), [ print_text_node("Hello!") ] )
+        act = command(command_name(["x"]), [], [ print_text_node("Hello!") ] )
         item1._actions.add_action( act )
         it.put_item(item1)
         game = _game_mock()
@@ -278,15 +291,15 @@ class Test_location(unittest.TestCase):
         
     def test_of_filled_element_2(self):
         obj = location()
-        obj._actions._actions.append(command(command_name(["abc"]), [exit_node()]))
+        obj._actions._actions.append(command(command_name(["abc"]), [], [exit_node()]))
         self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\n-nothing-\n\n[properties]\n\n[items]\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\nabc THEN EXIT\n")
         
     def test_of_execution_command(self):
         obj = location()
-        obj._actions._actions.append(command(command_name(["abc"]), [print_text_node("1.")]))
+        obj._actions._actions.append(command(command_name(["abc"]), [], [print_text_node("1.")]))
         obj._realm = realm()
-        obj._realm._actions._actions.append(command(command_name(["abc"]), [print_text_node("abc")]))
-        obj._realm._actions._actions.append(command(command_name(["xyz"]), [print_text_node("xyz")]))
+        obj._realm._actions._actions.append(command(command_name(["abc"]), [], [print_text_node("abc")]))
+        obj._realm._actions._actions.append(command(command_name(["xyz"]), [], [print_text_node("xyz")]))
         game = _game_mock()
         self.assertTrue(obj.try_execute("abc", game))
         self.assertFalse(obj.try_execute("Afr", game))
@@ -304,9 +317,43 @@ class Test_realm(unittest.TestCase):
     def test_of_filled_element_1(self):
         obj = realm()
         obj._name.set_names(["abc"])
-        obj._actions._actions.append(command(command_name(["abc"]), [exit_node()]))
+        obj._actions._actions.append(command(command_name(["abc"]), [], [exit_node()]))
         self.assertEqual(str(obj), "[type]\nrealm\n\n[name]\nabc\n\n[actions]\nabc THEN EXIT\n")
 
 #-------------------------------------------------------------------------
-       
+  
+class Test_player(unittest.TestCase):
 
+    def test_of_serialization_of_empty_object(self):
+        p = player()
+        self.assertEqual(str(p), "[type]\nplayer\n\n[properties]\n\n[items]\n")
+    
+    def test_of_filled_element(self):
+        p = player()
+        p._properties.add("abc", 100)
+        p._properties.add("xyz", 1234)
+        item1 = item()
+        item1._name.set_names(["AA", "R6"])
+        item2 = item()
+        item2._name.set_names(["AAA", "R3"])
+        p._items.put_item(item1)
+        p._items.put_item(item2)
+        self.assertTrue(type(p._items.peek_item("AA")) is item)
+        self.assertEqual(p._properties.get("xyz"), 1234)
+        self.assertEqual(p._properties.get("hgw"), 0)
+  
+    def test_of_serialization_of_filled_element(self):
+        p = player()
+        p._properties.add("abc", 100)
+        p._properties.add("xyz", 1234)
+        item1 = item()
+        item1._name.set_names(["AA", "R6"])
+        item2 = item()
+        item2._name.set_names(["AAA", "R3"])
+        p._items.put_item(item1)
+        p._items.put_item(item2)
+        self.assertTrue( (str(p) == "[type]\nplayer\n\n[properties]\nabc = 100\nxyz = 1234\n\n[items]\nAA\nAAA\n") or \
+                         (str(p) == "[type]\nplayer\n\n[properties]\nxyz = 1234\nabc = 100\n\n[items]\nAA\nAAA\n") )
+  
+#-------------------------------------------------------------------------
+       

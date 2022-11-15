@@ -1,0 +1,13 @@
+[type]
+item
+
+[name]
+fireplace
+
+[description]
+A fireplace on the floor 
+It is a fireplace with some wood covered with sand. It looks like it was extinguished by someone and you can burn it.
+
+[actions]
+_ burn THEN PRINT You burn a fire; DEL fireplace; DROP NEW fire
+take fireplace THEN PRINT You cannot take the fireplace.

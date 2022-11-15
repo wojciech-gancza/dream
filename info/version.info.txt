@@ -33,5 +33,20 @@ was added to allow different execution scenarios depending on items. Examples
 was refactored and reordered. Handbook with 2 lessions was added to project. 
 Starting scripts (Windows) was added to simplify running different games.
 
+Version 0.03.000
+----------------
+
+[functionality]
+Actions conditions and property management. Debug support allowing dumping objects 
+and tracing execution chain of responsibility
+
+[Content]
+Full access to properties - named integer values (0..9999) which could be attached 
+to different contexts - location, realm, player and items. Properties can be tested 
+switching on and off different versions of actions. Also debug support is added and 
+the output terminal is colored using ANSI terminal codes. Previous terminal is still 
+available in the code.
+Handbook was prepared up to 4-th lession, however lecture presentation is not yet ready
+
 
 

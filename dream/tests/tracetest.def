@@ -1,0 +1,20 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+tracetest
+
+[description]
+short description
+long description
+
+[actions]
+on THEN TRACE 1
+off THEN TRACE 0
+dump player THEN DUMP PLAYER
+dump realm THEN DUMP REALM
+dump location THEN DUMP LOCATION
+dump then THEN DUMP OBJECT

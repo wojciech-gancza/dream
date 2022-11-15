@@ -1,0 +1,16 @@
+[type]
+location
+
+[realm]
+new york
+
+[name]
+Harlem
+
+[description]
+This is a street in Harlem
+Harlem is the north part of manhattan. The only way you can go is south, however you can try...
+
+[actions]
+e; east; go east THEN PRINT You go east to ...; GOTO pawn shop
+s; south; go south THEN PRINT You go south to ...; GOTO central park

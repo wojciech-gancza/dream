@@ -1,0 +1,13 @@
+[type]
+item
+
+[name]
+pickaxe
+
+[properties]
+price = 10
+power = 110
+
+[description]
+A strong and preety new picaxe
+A pickaxe good for digging in hard groung and even in rock. Good for mining.

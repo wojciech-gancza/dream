@@ -1,0 +1,11 @@
+[type]
+realm
+
+[actions]
+n; north; go north THEN PRINT You cannot go north.
+e; east; go east THEN PRINT You cannot go east.
+s; south; go south THEN PRINT You cannot go south.
+w; west; go west THEN PRINT You cannot go west.
+talk THEN PRINT You have nothing to talk about. 
+look THEN LOOK
+wake up THEN EXIT

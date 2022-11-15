@@ -5,7 +5,7 @@
 """ Main data structures of RPG environment. """
 
 from tools       import translator
-from compiler    import command, \
+from execution   import command, \
                         exit_node, \
                         command_name
 
@@ -79,15 +79,22 @@ class property(object):
     MINIMAL_VALUE = 0
     DEFAULT_VALUE = 0
     
-    def __init__(self):
-        self._value = property.DEFAULT_VALUE
-        
-    def add(self, value):
-        self._value = self._value + value;
+    def _unify_value(self):
         if self._value < property.MINIMAL_VALUE:
             self._value = property.MINIMAL_VALUE
         elif self._value > property.MAXIMAL_VALUE:
             self._value = property.MAXIMAL_VALUE
+    
+    def __init__(self):
+        self._value = property.DEFAULT_VALUE
+        
+    def add(self, value):
+        self._value = self._value + value
+        self._unify_value()
+       
+    def set(self, value):
+        self._value = value
+        self._unify_value()
        
     def get(self):
         return self._value
@@ -109,6 +116,11 @@ class properties(object):
         if not name in self._properties.keys():
             self._properties[name] = property()
         self._properties[name].add(value)
+        
+    def set(self, name, value):
+        if not name in self._properties.keys():
+            self._properties[name] = property()
+        self._properties[name].set(value)
         
     def get(self, name):
         if name in self._properties.keys():
@@ -169,7 +181,7 @@ class item(object):
         self._actions = actions()
 
     def __str__(self):
-        return "[type]\nlocation\n\n" + \
+        return "[type]\nitem\n\n" + \
             str(self._name) + "\n" + \
             str(self._properties) + "\n" + \
             str(self._description) + "\n" + \
@@ -255,14 +267,33 @@ class location(object):
             str(self._actions)
             
     def try_execute(self, command_text, game):
+        game._console.log("attempt to execute location items actions")
         if self._items.try_execute(command_text, game):
             return True 
+        game._console.log("attempt to execute location actions")
         if self._actions.try_execute(command_text, game):
             return True
         if not self._realm is None:
-             return self._realm._actions.try_execute(command_text, game)
+            game._console.log("attempt to execute realm acctions")
+            return self._realm._actions.try_execute(command_text, game)
         return False
             
+#-------------------------------------------------------------------------
+
+class player(object):
+
+    """ Player contain all information about the player """
+    
+    def __init__(self):
+        self._properties = properties()
+        self._items = items()
+        
+        
+    def __str__(self):
+        return "[type]\nplayer\n\n" + \
+            str(self._properties) + "\n" + \
+            str(self._items)
+       
 #-------------------------------------------------------------------------
        
 

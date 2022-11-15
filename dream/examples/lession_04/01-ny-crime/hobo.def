@@ -1,0 +1,12 @@
+[type]
+item
+
+[name]
+hobo
+
+[description]
+A typical NY hobo
+It characteristically smell, and peoples usually do not like to notice its existance, however it could saw something.
+
+[actions]
+talk THEN MODIFY PLAYER know hobo observation BY 1; PRINT You ask hobo for describing what has happened; PRINT - It was a magic. The rich man aims a magic wand, and this guy falls down.

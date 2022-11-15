@@ -1,0 +1,22 @@
+[type]
+location
+
+[realm]
+realm
+
+[name]
+shop
+
+[items]
+pickaxe
+
+[description]
+You see small shop selling some stuff
+You are inside small shop. There is an exit on north. You can buy a stugg located here if you have sufficient amount of money.
+
+[actions]
+n; north; go north THEN GOTO city
+take WHEN OBJECT price > 0 THEN PRINT It is a shop. You cannot take anything here without offerin money in exchange.
+buy WHEN OBJECT price > money value THEN PRINT You do not have sufficent amount of money to buy OBJECT
+buy THEN TAKE NEW OBJECT; MODIFY money value BY - OBJECT price; PRINT You bought a OBJECT; EXEC _ check money remains
+_ check money remains WHEN money value = 0 THEN DEL money

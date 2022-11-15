@@ -1,0 +1,17 @@
+[type]
+location
+
+[realm]
+new york
+
+[name]
+Old Mansion
+
+[description]
+Old Mansion
+Old Mansion
+
+[actions]
+n; north; go north THEN PRINT You go north to ...; GOTO pawn shop
+s; south; go south THEN PRINT You go south to ...; GOTO comic book store
+w; west; go west THEN PRINT You go west to ...; GOTO central park

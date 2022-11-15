@@ -1,0 +1,19 @@
+[type]
+realm
+
+[actions]
+look THEN LOOK
+exit THEN PRINT You wake up...; EXIT
+i THEN POCKET
+take THEN TAKE OBJECT; PRINT You take a OBJECT
+
+n; north; go north THEN PRINT You cannot go north
+e; east; go east THEN PRINT You cannot go east
+s; south; go south THEN PRINT You cannot go south
+w; west; go west THEN PRINT You cannot go west
+
+dig WHEN OBJECT power > 100 THEN EXEC _ dig with pickaxe
+dig WHEN OBJECT power > 10 THEN EXEC _ dig with knife
+dig THEN PRINT You cannot dig with bare hands
+
+_ dig with pickaxe; _ dig with knife THEN PRINT You dig in the ground but you found nothing

@@ -1,0 +1,13 @@
+[type]
+item
+
+[properties]
+weight = 500
+
+[name]
+hammer
+heavy hammer
+
+[description]
+A heavy hammer
+Heavy hammer used in smithing.

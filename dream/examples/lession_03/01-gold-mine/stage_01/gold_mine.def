@@ -1,0 +1,31 @@
+[type]
+location
+
+[name]
+gold mine
+
+[items]
+knife
+
+[description]
+You see a a tunnel of old gold mine
+You are in gold mine. It looks like abadoned long time ago, but when you look closely at the walls you see a stain of glitter.
+
+[actions]
+look THEN LOOK
+exit THEN PRINT You wake up...; EXIT
+i THEN POCKET
+take THEN TAKE OBJECT; PRINT You take a OBJECT
+
+dig WHEN OBJECT power > 100 THEN EXEC _ dig with pickaxe
+dig WHEN OBJECT power > 10 THEN EXEC _ dig with knife
+dig THEN PRINT You cannod dig in the rock with bare hands
+
+_ dig with pickaxe WHEN DICE < 4 THEN PRINT You attempt to dig gold, but you found nothing.
+_ dig with pickaxe THEN PRINT You dig some gold; EXEC _ create gold when needed; MODIFY gold value BY 20 + DICE 100 
+
+_ dig with knife WHEN DICE < 5 THEN PRINT You attempt to dig gold by scratching the wall, but you found nothing.
+_ dig with knife THEN PRINT You dig some gold; EXEC _ create gold when needed; MODIFY gold value BY DICE
+
+_ create gold when needed WHEN gold value = 0 THEN TAKE NEW gold
+_ create gold when needed THEN PRINT You add the new gold to the one you already found.

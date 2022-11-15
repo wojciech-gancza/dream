@@ -1,0 +1,20 @@
+[type]
+item
+
+[name]
+actress
+
+[properties]
+locked = 1
+is actress = 1
+
+[description]
+Actress in clown disguise
+A young actress who attempt to play street clown. It is interesting - is it for fun or it prepaares for the role. Or, it is just student task.
+
+[actions]
+examine WHEN OBJECT is actress = 1 THEN EXAMINE OBJECT; MODIFY PLAYER know actress BY 1
+talk WHEN PLAYER know hobo observation > 0; PLAYER know about observation > 0 THEN PRINT You say:; PRINT - Did you notice something strange?; PRINT - I think... Yes. One guy was emotionally totally unstable. He went south - to wall street.
+talk WHEN PLAYER know actress > 0 THEN PRINT You say:; PRINT - Hello, what are you doing? Are you preparing yourself to the role?; PRINT - Yes, and I am studying peoples faces, their emotions.; MODIFY PLAYER know about observation BY 1
+talk THEN PRINT You have no subject to talk about. 
+

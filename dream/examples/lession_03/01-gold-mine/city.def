@@ -1,0 +1,18 @@
+[type]
+location
+
+[realm]
+realm
+
+[name]
+city
+
+[description]
+You see a center squate of small city
+You are in a center of small city. East road leads to crossroad on the city border. You see bank on the north and shop on south part of the street.
+
+[actions]
+n; north; go north THEN GOTO bank
+s; south; go south THEN GOTO shop
+e; east; go east THEN GOTO crossroad
+

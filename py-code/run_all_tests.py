@@ -20,7 +20,8 @@ from data_test       import Test_name, \
                             Test_actions, \
                             Test_item, \
                             Test_inventory, \
-                            Test_realm
+                            Test_realm, \
+                            Test_player
 
 from builder_test    import Test_array_tokenizer, \
                             Test_buffered_token_source, \
@@ -31,12 +32,30 @@ from builder_test    import Test_array_tokenizer, \
                             Test_realm_cache, \
                             Test_location_cache
 
-from compiler_test   import Test_object_provider, \
+from expression_test import Test_object_provider, \
                             Test_object_parameter_provider, \
                             Test_subject_parameter_provider, \
+                            Test_item_parameter_provider, \
                             Test_constant_provider, \
                             Test_new_provider, \
-                            Test_exit_node, \
+                            Test_expression_base_class, \
+                            Test_of_constant_expression, \
+                            Test_of_sum_expression, \
+                            Test_of_product_expression, \
+                            Test_of_property_provider_base, \
+                            Test_of_object_property_provider, \
+                            Test_of_subject_property_provider, \
+                            Test_of_location_property_provider, \
+                            Test_of_player_property_provider, \
+                            Test_of_free_text_property_provider, \
+                            Test_of_item_property_provider, \
+                            Test_of_dice_value, \
+                            Test_of_property_provider_base, \
+                            Test_of_player_provider, \
+                            Test_of_location_provider, \
+                            Test_of_realm_provider
+
+from execution_test  import Test_exit_node, \
                             Test_translating_text_node, \
                             Test_print_text_node, \
                             Test_look_around_node, \
@@ -47,9 +66,25 @@ from compiler_test   import Test_object_provider, \
                             Test_drop_item_node, \
                             Test_delete_item_node, \
                             Test_execute_command_node, \
+                            Test_of_become_node, \
                             Test_command_name, \
                             Test_command, \
-                            Test_compiler
+                            Test_modify_property_base, \
+                            Test_advance_property_node, \
+                            Test_set_property_node, \
+                            Test_trace_node, \
+                            Test_dump_node
+
+from condition_test  import Test_condition_base, \
+                            Test_comparison_condition, \
+                            Test_comparision_equal_condition, \
+                            Test_comparision_not_equal_condition, \
+                            Test_comparision_greater_condition, \
+                            Test_comparision_greater_or_equal_condition, \
+                            Test_comparision_less_condition, \
+                            Test_comparision_less_or_equal_condition
+
+from compiler_test   import Test_compiler
 
 from game_test       import Test_of_the_processor
 
