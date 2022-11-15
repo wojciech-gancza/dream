@@ -1,0 +1,25 @@
+[type]
+location
+
+[name]
+test location
+
+[realm]
+reality
+
+[properties]
+volume = 1000
+light = 5
+
+[items]
+unisolated wire
+
+[description]
+The test location.
+Test location looks a little bit testy.
+
+[actions]
+look THEN PRINT It is too dark to see anything. You should relay or other senses.
+touch THEN PRINT You feel wet stone walls. A lot of wet stones. Wet stones ewerywhere. Moment! You feel something like thick wire.
+smell THEN PRINT It is wet but air seems to be fresh. Maybe better call it - well preserved.
+_ run something THEN PRINT Something was running

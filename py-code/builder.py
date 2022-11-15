@@ -12,6 +12,7 @@ from data      import location, \
                       properties, \
                       actions, \
                       item, \
+                      items, \
                       realm
 from compiler  import compiler
 
@@ -27,9 +28,11 @@ class file_data_source(object):
 
     def get_data_set(self, name):
         unified_name = translator.make_identifier(name)
-        filename = "../" + self._directory + "/" + unified_name + ".def"
+        filename = self._directory + "/" + unified_name + ".def"
         file = open(filename, "r")
-        return file.readlines()
+        lines = file.readlines()
+        file.close()
+        return lines
 
 #-------------------------------------------------------------------------
 
@@ -167,6 +170,8 @@ class object_builder(object):
                 element = object_builder._create_name(data_source)
             elif element_type == "properties":
                 element = object_builder._create_properties(data_source)
+            elif element_type == "items":
+                element = object_builder._create_items(data_source, repository)
             elif element_type == "actions":
                 element = object_builder._create_actions(data_source)
             elif element_type == "realm":
@@ -235,6 +240,16 @@ class object_builder(object):
         obj = repository.get_object(name)
         return obj
 
+    @classmethod
+    def _create_items(self, data_source, repository):
+        name = data_source.try_get_data()
+        result = items()
+        while not name is None:
+            obj = repository.get_object(name)
+            result.put_item(obj)
+            name = data_source.try_get_data()
+        return result
+
 #-------------------------------------------------------------------------
  
 class object_factory(object):
@@ -246,9 +261,60 @@ class object_factory(object):
         self._files_access = file_data_source(directory)
 
     def get_object(self, name):
-        return object_builder.get_object(
-                    array_tokenizer(
-                        self._files_access.get_data_set(name) ), self )        
+        try:
+            return object_builder.get_object(
+                        array_tokenizer(
+                            self._files_access.get_data_set(name) ), self )  
+        except Exception as ex:
+            raise error("Cannot create object named '" + name + "'")
 
 #-------------------------------------------------------------------------
+
+class factory_realm_cache(object):
+
+    """ Factoried object cache - keeps realm object as long as it is 
+        requested. Only one realm is kept in the cache, bacause 
+        cache is changed rarely """
+        
+    def __init__(self, factory):
+        self._factory = factory
+        self._cached_object = None
+        self._cached_object_name = ""
+        
+    def get_object(self, name):
+        if self._cached_object_name == name:
+            return self._cached_object
+        obj = self._factory.get_object(name)
+        if type(obj) is realm:
+            self._cached_object = obj
+            self._cached_object_name = name
+        return obj
  
+#-------------------------------------------------------------------------
+ 
+class factory_location_cache(object):
+
+    """ Factoried object cache - keeps last few accessible locations """
+        
+    def __init__(self, size, factory):
+        self._factory = factory
+        self._cache_size = size
+        self._cached_objects_with_names = [ ]
+        
+    def get_object(self, name):
+        for pair in self._cached_objects_with_names:
+            if pair[0] == name:
+                obj = pair[1]
+                self._cached_objects_with_names.remove(pair)
+                self._cached_objects_with_names.append((name, obj))
+                return obj
+        obj = self._factory.get_object(name)
+        if type(obj) is location:
+            if len(self._cached_objects_with_names) >= self._cache_size:
+                self._cached_objects_with_names = self._cached_objects_with_names[1:]
+            self._cached_objects_with_names.append( (name, obj) )
+        return obj
+
+#-------------------------------------------------------------------------
+
+

@@ -20,7 +20,9 @@ from builder   import file_data_source, \
                       buffered_token_source, \
                       data_reader, \
                       object_builder, \
-                      object_factory
+                      object_factory, \
+                      factory_realm_cache, \
+                      factory_location_cache
 from compiler  import compiler
 
 #-------------------------------------------------------------------------
@@ -28,7 +30,7 @@ from compiler  import compiler
 class Test_file_data_source(unittest.TestCase):
 
     def test_of_reading_file(self):
-        source = file_data_source("test-dream")
+        source = file_data_source("../dream/tests")
         content = source.get_data_set("dark cave")
         self.assertEqual(content[0], "[type]\n")
 
@@ -252,7 +254,11 @@ class Test_object_builder(unittest.TestCase):
         data_source = data_reader(buffered_token_source(array_tokenizer( \
             ["a=234", "b=324", "c=331"] )))
         props = object_builder._create_properties(data_source)
-        self.assertEqual(str(props), "[properties]\na = 234\nc = 331\nb = 324\n")
+        ps = str(props)
+        self.assertTrue(ps.find("[properties]") == 0)
+        self.assertTrue(ps.find("\na = 234\n")>0)
+        self.assertTrue(ps.find("\nc = 331\n")>0)
+        self.assertTrue(ps.find("\nb = 324\n")>0)
         
     def test_of_propert_set_with_wrong_definition_1(self):
         data_source = data_reader(buffered_token_source(array_tokenizer( \
@@ -292,7 +298,7 @@ class Test_object_builder(unittest.TestCase):
             "Short piece of shiny wire", \
             "This is a piece of wire. It is about 20cm long and it looks like made of aluminium. It is preety hard to bend, but bendable in bare fingers." ] )
         item = object_builder.get_object(data_source)
-        self.assertEqual(str(item), "[type]\nlocation\n\n[name]\ndark cave\ncave\n\n[properties]\n\n[description]\nShort piece of shiny wire\nThis is a piece of wire. It is about 20cm long and it looks like made of aluminium. It is preety hard to bend, but bendable in bare fingers.\n\n[actions]\n")
+        self.assertEqual(str(item), "[type]\nlocation\n\n[name]\ndark cave\ncave\n\n[properties]\n\n[items]\n\n[description]\nShort piece of shiny wire\nThis is a piece of wire. It is about 20cm long and it looks like made of aluminium. It is preety hard to bend, but bendable in bare fingers.\n\n[actions]\n")
  
     def test_of_wrong_format_1(self):
         data_source = array_tokenizer( [\
@@ -358,30 +364,94 @@ class Test_object_builder(unittest.TestCase):
     def test_of_method_creating_realm(self):
         data_source = data_reader(buffered_token_source(array_tokenizer( \
             ["reality"] )))
-        factory = object_factory("test-dream") 
+        factory = object_factory("../dream/tests") 
         rlm = object_builder._create_realm(data_source, factory)
-        self.assertEqual(str(rlm), "[type]\nrealm\n\n[name]\nreality\n\n[actions]\nwake up; exit THEN PRINT You woke up from the dream.; EXIT\nlook THEN LOOK\n")
+        self.assertEqual(str(rlm), "[type]\nrealm\n\n[name]\nreality\n\n[actions]\nwake up; exit THEN PRINT You woke up from the dream.; EXIT\nlook THEN LOOK\ni; inventory; pocket THEN POCKET\ntake THEN TAKE OBJECT\n")
 
     def test_of_getting_realm(self):
         data_source = array_tokenizer( \
             ["[type]", "location", "[realm]", "reality"] )
-        factory = object_factory("test-dream") 
+        factory = object_factory("../dream/tests") 
         loc = object_builder.get_object(data_source, factory)
-        self.assertEqual(str(loc._realm), "[type]\nrealm\n\n[name]\nreality\n\n[actions]\nwake up; exit THEN PRINT You woke up from the dream.; EXIT\nlook THEN LOOK\n")
+        self.assertEqual(str(loc._realm), "[type]\nrealm\n\n[name]\nreality\n\n[actions]\nwake up; exit THEN PRINT You woke up from the dream.; EXIT\nlook THEN LOOK\ni; inventory; pocket THEN POCKET\ntake THEN TAKE OBJECT\n")
 
+    def test_of_create_items_1(self):
+        data_source = data_reader(buffered_token_source(array_tokenizer( \
+            ["unisolated wire", "lockpick made from wire"] )))
+        factory = object_factory("../dream/tests") 
+        ivt = object_builder._create_items(data_source, factory)
+        self.assertEqual(str(ivt), "[items]\nwire\nlockpick\n")
+        
+    def test_of_create_items_2(self):
+        data_source = data_reader(buffered_token_source(array_tokenizer( \
+            ["wired unisolator", "lockpick made from wire"] )))
+        factory = object_factory("../dream/tests") 
+        try:
+            ivt = object_builder._create_items(data_source, factory)
+            self.assertTrue(False)
+        except error as err:
+            self.assertEqual(str(err), "ERROR: Cannot create object named 'wired unisolator'")
+        
+    def test_of_getting_items(self):
+        data_source = array_tokenizer( \
+            ["[type]", "location", "[items]", "unisolated wire", "lockpick made from wire"] )
+        factory = object_factory("../dream/tests") 
+        loc = object_builder.get_object(data_source, factory)
+        self.assertEqual(str(loc._items), "[items]\nwire\nlockpick\n")
+        
 #-------------------------------------------------------------------------
  
 class Test_object_factory(unittest.TestCase):
     
     def test_of_creation_object_2(self):
-        factory = object_factory("test-dream")
+        factory = object_factory("../dream/tests")
         obj = factory.get_object("dark cave")
-        self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\ndark cave\ncave\nunknown cave\n\n[realm]\nreality\n\n[properties]\nvolume = 1000\nlight = 5\n\n[description]\nThe cave is really dark\nYou see barly nothing. The cave is really dark. After a while you seem to see a shadows in the darkness but you cannot realize what it can be. You see no way out and no possiblility to move safely.\n\n[actions]\nlook THEN PRINT It is too dark to see anything. You should relay or other senses.\n")       
+        self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\ndark cave\ncave\nunknown cave\n\n[realm]\nreality\n\n[properties]\nvolume = 1000\nlight = 5\n\n[items]\nwire\n\n[description]\nThe cave is really dark\nYou see barly nothing. The cave is really dark. After a while you seem to see a shadows in the darkness but you cannot realize what it can be. You see no way out and no possiblility to move safely.\n\n[actions]\nlook THEN PRINT It is too dark to see anything. You should relay or other senses.\ntouch THEN PRINT You feel wet stone walls. A lot of wet stones. Wet stones ewerywhere. Moment! You feel something like thick wire.\nsmell THEN PRINT It is wet but air seems to be fresh. Maybe better call it - well preserved.\n")       
 
     def test_of_creation_object_1(self):
-        factory = object_factory("test-dream")
+        factory = object_factory("../dream/tests")
         obj = factory.get_object("unisolated wire")
-        self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\nwire\nunisolated wire\naluminum wire\n\n[properties]\nresistance = 1\n\n[description]\nShort piece of shiny wire.\nThis is a piece of wire. It is about 20cm long and it looks like made of aluminium. It is preety hard to bend, but bendable in bare fingers.\n")
+        self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\nwire\nunisolated wire\naluminum wire\n\n[properties]\nresistance = 1\n\n[description]\nShort piece of shiny wire.\nThis is a piece of wire. It is about 20cm long and it looks like made of aluminium. It is preety hard to bend, but bendable in bare fingers.\n\n[actions]\n")
   
+#-------------------------------------------------------------------------
+
+class Test_realm_cache(unittest.TestCase):
+
+    def test_of_caching_realm(self):
+        factory = object_factory("../dream/tests")
+        factory = factory_realm_cache(factory)
+        x1 = factory.get_object("reality")
+        x2 = factory.get_object("reality")
+        x3 = factory.get_object("nightmare")
+        x4 = factory.get_object("reality")
+        self.assertTrue(x1 is x2)
+        self.assertFalse(x1 is x4)
+ 
+#-------------------------------------------------------------------------
+ 
+class Test_location_cache(unittest.TestCase):
+
+    def test_of_caching_location(self):
+        factory = object_factory("../dream/tests")
+        factory = factory_location_cache(3, factory)
+        h1 = factory.get_object("mansion hall")
+        k1 = factory.get_object("mansion kitchen")
+        h2 = factory.get_object("mansion hall")
+        d1 = factory.get_object("mansion dining room")
+        s1 = factory.get_object("mansion storage")
+        h3 = factory.get_object("mansion hall")
+        self.assertTrue(h1 is h2)
+        self.assertTrue(h1 is h3)
+
+    def test_of_forgetting_location(self):
+        factory = object_factory("../dream/tests")
+        factory = factory_location_cache(3, factory)
+        h1 = factory.get_object("mansion hall")
+        d2 = factory.get_object("mansion dining room")
+        s2 = factory.get_object("mansion storage")
+        k1 = factory.get_object("mansion kitchen")
+        h4 = factory.get_object("mansion hall")
+        self.assertFalse(h1 is h4)
+
 #-------------------------------------------------------------------------
  

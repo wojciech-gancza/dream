@@ -1,0 +1,35 @@
+[type]
+location
+
+[name]
+dark cave
+cave
+unknown cave
+
+[realm]
+reality
+
+[properties]
+volume = 1000
+light = 5
+
+[items]
+unisolated wire
+
+[description]
+The cave is really dark
+You see barly nothing. The cave is really dark. After a while you seem to see a shadows in the darkness but you cannot realize what it can be. You see no way out and no possiblility to move safely. 
+
+[actions]
+xlook THEN PRINT It is too dark to see anything. You should relay or other senses.
+touch THEN PRINT You feel wet stone walls. A lot of wet stones. Wet stones ewerywhere. Moment! You feel something like thick wire.
+smell THEN PRINT It is wet but air seems to be fresh. Maybe better call it - well preserved.
+examine THEN EXAMINE OBJECT
+take THEN TAKE OBJECT; PRINT You take OBJECT
+drop THEN DROP OBJECT; PRINT You drop OBJECT
+del THEN PRINT You destroy OBJECT; DEL OBJECT
+summon THEN TAKE NEW gizmo; PRINT A gizmo appears in your pocket!
+clone THEN TAKE NEW SUBJECT
+x THEN EXAMINE unisolated wire
+y THEN EXAMINE unwired isolation
+z THEN GOTO hell

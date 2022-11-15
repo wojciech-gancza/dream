@@ -1,0 +1,10 @@
+[type]
+realm
+
+[name]
+reality
+
+[actions]
+look THEN LOOK
+wake up; exit THEN PRINT You woke up from the dream.; EXIT
+

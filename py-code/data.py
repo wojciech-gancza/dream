@@ -134,7 +134,7 @@ class actions(object):
         
     def add_action(self, action):
         self._actions.append(action)
-        
+    
     def try_execute(self, command_text, game):
         for action in self._actions:
             if action.try_execute(command_text, game):
@@ -166,13 +166,52 @@ class item(object):
         self._name = name()
         self._properties = properties()
         self._description = description()
+        self._actions = actions()
 
     def __str__(self):
         return "[type]\nlocation\n\n" + \
             str(self._name) + "\n" + \
             str(self._properties) + "\n" + \
-            str(self._description)
+            str(self._description) + "\n" + \
+            str(self._actions)
 
+#-------------------------------------------------------------------------
+
+class items(object):
+
+    """ list of items which can be attached to player/creature or location """
+    
+    def __init__(self):
+        self._items = []
+        
+    def put_item(self, item):
+        self._items.append( item )
+        
+    def get_item(self, item_name):
+        for item in self._items:
+            if item_name == item._name.get_name() or item_name in item._name._alternative_names:
+                self._items.remove(item)
+                return item
+        return None
+
+    def peek_item(self, item_name):
+        for item in self._items:
+            if item_name == item._name.get_name() or item_name in item._name._alternative_names:
+                return item
+        return None 
+        
+    def try_execute(self, command_text, game):
+        for item in self._items:
+            if item._actions.try_execute(command_text, game):
+                return True
+        return False
+
+    def __str__(self):
+        result = "[items]\n"
+        for item in self._items:
+            result = result + item._name.get_name() + "\n"
+        return result
+    
 #-------------------------------------------------------------------------
 
 class realm(object):
@@ -200,6 +239,7 @@ class location(object):
         self._name = name()
         self._realm = None
         self._properties = properties()
+        self._items = items()
         self._description = description()
         self._actions = actions()
 
@@ -210,14 +250,18 @@ class location(object):
             result = result + "[realm]\n" + self._realm._name.get_name() + "\n\n"
         return result + \
             str(self._properties) + "\n" + \
+            str(self._items) + "\n" + \
             str(self._description) + "\n" + \
             str(self._actions)
             
     def try_execute(self, command_text, game):
-        if not self._actions.try_execute(command_text, game):
-            if not self._realm is None:
-                return self._realm._actions.try_execute(command_text, game)
-        return True
+        if self._items.try_execute(command_text, game):
+            return True 
+        if self._actions.try_execute(command_text, game):
+            return True
+        if not self._realm is None:
+             return self._realm._actions.try_execute(command_text, game)
+        return False
             
 #-------------------------------------------------------------------------
        

@@ -1,0 +1,17 @@
+[type]
+location
+
+[realm]
+corpo
+
+[name]
+work
+workingplace
+
+[description]
+Your workingplace is crowdy and noisy
+The open space looks like ant hive, however after a while you notice that all of the people luuks busy because they want to look like this and most of the activities have no meaning. Some of them just walk in circle with pile of papers, other discuss by the phome with mug of cold coffe in their hand. You need to act like that 8 hours to earn money for your poor existance.
+
+[actions]
+work THEN PRINT You grap some papiers and go to toilet located in opposite side of the building. You hurry, so you look busy.; PRINT In the way back you take a coffe.
+exit THEN PRINT You levae the office and go on a street.; GOTO street

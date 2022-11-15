@@ -1,0 +1,18 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+narrow crack
+
+[description]
+You are is narrow crack between stone walls.
+You are in narrow crack with hloor covered with pebbles. The walls are inslined so they are meet few meters above. 
+
+[actions]
+n; north; go north          THEN PRINT You go notrth; PRINT The path between stone walls turns sudennly left; GOTO labirynth
+ne; northeast; go northeast THEN PRINT You go northeast directly into the darkness; GOTO darkness
+s; south; go south          THEN PRINT You go south and after few steps you see a daylight after tunnel turn; GOTO cave
+sw; southwest; go southwest THEN PRINT You go southwest and a little down through narrow corridor. It is going really dark; GOTO dark grotto

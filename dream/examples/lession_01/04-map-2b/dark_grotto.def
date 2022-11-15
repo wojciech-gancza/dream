@@ -1,0 +1,21 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+dark grotto
+
+[description]
+You see darkness and you feel that it should be a grotto.
+Tou see nothing, but you hear water dropping from stalagmites. Echos gives impression of big empty space. Is it possible to find a way in this darkness.
+
+[actions]
+n; north; go north          THEN PRINT You enter a tunnel, but it is hard to see anything; PRINT The path is for sure not going stright; GOTO underground lake
+ne; northeast; go northeast THEN PRINT You enter a tunnel, but it is hard to see anything; PRINT The path is for sure not going stright; GOTO darkness
+e; east; go east            THEN PRINT You enter a tunnel, but it is hard to see anything; PRINT The path is for sure not going stright; GOTO narrow crack
+se; southeast; go southeast THEN PRINT You enter a tunnel, but it is hard to see anything; PRINT The path is for sure not going stright; GOTO tunnel
+s; south; go south          THEN PRINT You enter a tunnel, but it is hard to see anything; PRINT The path is for sure not going stright; GOTO cave
+sw; southwest; go southwest THEN PRINT You enter a tunnel, but it is hard to see anything; PRINT The path is for sure not going stright; GOTO grotto
+w; west; go west            THEN PRINT You enter a tunnel, but it is hard to see anything; PRINT The path is for sure not going stright; GOTO labirynth

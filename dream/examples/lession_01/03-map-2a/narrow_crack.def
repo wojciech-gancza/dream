@@ -1,0 +1,16 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+narrow crack
+
+[description]
+You are is narrow crack between stone walls.
+You are in narrow crack with hloor covered with pebbles. The walls are inslined so they are meet few meters above. 
+
+[actions]
+n; north; go north              THEN PRINT You continue the travel north; GOTO darkness
+sw; southwest; go southwest     THEN PRINT You crawl into a hole on southwest; GOTO cave

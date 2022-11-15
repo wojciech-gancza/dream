@@ -1,0 +1,16 @@
+[type]
+location
+
+[realm]
+corpo
+
+[name]
+street
+
+[description]
+Street at this time is crowdy. 
+You walk toward home. Lot of junk food sellers have stands here, but the fiid does not look nice. However you thing you can eat something.
+
+[actions]
+go home THEN PRINT You go home.; GOTO home
+eat THEN PRINT You buy and eat something. It has no taste at all but you do not fill hungry anymore.; PRINT To tell you the truth - you fill a little sick

@@ -1,0 +1,17 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+tunnel
+
+[description]
+You are in stone tunnel
+You are in a tunnel is formed by water between large boulders. It looks like previously this was a large cave which collapses 
+
+[actions]
+n; north; go north          THEN PRINT You continue you exploration going noth; GOTO labirynth
+ne; northeast; go northeast THEN PRINT You enter the side branch of tunnel juntion; GOTO darkness
+s; south; go south          THEN PRINT You go back to lighter areas; GOTO cave

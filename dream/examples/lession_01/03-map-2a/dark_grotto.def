@@ -1,0 +1,16 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+dark grotto
+
+[description]
+You see darkness and you feel that it should be a grotto.
+Tou see nothing, but you hear water dropping from stalagmites. Echos gives impression of big empty space. Is it possible to find a way in this darkness.
+
+[actions]
+ne; northeast; go northeast THEN PRINT You go after echos of water.; GOTO underground lake
+e; east; go east            THEN PRINT You go into the arknes touching the path under your feets.; GOTO labirynth

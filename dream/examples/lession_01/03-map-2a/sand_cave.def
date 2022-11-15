@@ -1,0 +1,15 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+sand cave
+
+[description]
+You see a cave with floor formed from shiny sand emmiting delicate luminescence.
+You are in a smaller cave. You can see stalagmites above your head and white sand under your feets.  
+
+[actions]
+w; west; go west            THEN PRINT You go west.; GOTO underground_lake

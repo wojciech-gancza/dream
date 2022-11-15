@@ -1,0 +1,17 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+darkness
+
+[description]
+You see barely nothing. It is dark. 
+The place seems to be large, however it is hard to see anything. You can feel the movement of air, so it should be possible to exit it on many ways. You can go with care toucheing walls and looking for available exits.
+
+[actions]
+s; south; go south          THEN PRINT You touch the walls and found path south.; GOTO narrow crack
+sw; southwest; go southwest THEN PRINT You touch the walls and found path on southwest.; GOTO tunnel
+nw; northwest; go northwest THEN PRINT You touch the nothwest wall and found a crack leating to somewhere.; GOTO underground lake

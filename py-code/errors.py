@@ -21,3 +21,12 @@ class error(Exception):
         return "ERROR: " + self._text
 
 #-------------------------------------------------------------------------
+
+class break_action(Exception):
+
+    """ error raised when problems with action execution was found """
+
+    def __str__(self):
+        return "BREAK: execution of command was broken."
+
+#-------------------------------------------------------------------------

@@ -1,0 +1,17 @@
+[type]
+realm
+
+[name]
+reality
+
+[actions]
+wake up; exit               THEN PRINT You woke up from the dream.; EXIT
+look                        THEN PRINT You look around; LOOK
+n; north; go north          THEN PRINT It is not possible to go north
+ne; northeast; go northeast THEN PRINT It is not possible to go northeast
+e; east; go east            THEN PRINT It is not possible to go east
+se; southeast; go southeast THEN PRINT It is not possible to go southeast
+s; south; go south          THEN PRINT It is not possible to go south
+sw; southwest; go southwest THEN PRINT It is not possible to go southwest
+w; west; go west            THEN PRINT It is not possible to go west
+nw; northwest; go northwest THEN PRINT It is not possible to go northwest

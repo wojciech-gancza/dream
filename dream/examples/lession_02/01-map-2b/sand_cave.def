@@ -1,0 +1,18 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+sand cave
+
+[description]
+You see a cave with floor formed from shiny sand emmiting delicate luminescence.
+You are in a smaller cave. You can see stalagmites above your head and white sand under your feets.  
+
+[actions]
+e; east; go east            THEN PRINT You enter east tunnl turning sligtly right.; PRINT It is going dark; GOTO darkness
+s; south; go south          THEN PRINT You go south path, which turns right grossing another crack; GOTO underground lake
+sw; southwest; go southwest THEN PRINT You go stright southeast; GOTO labirynth
+_ dig ground                THEN EXEC _ check treasure map; TAKE NEW treasure; PRINT You found a treasure

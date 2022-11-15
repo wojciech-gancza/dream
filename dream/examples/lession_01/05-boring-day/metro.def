@@ -1,0 +1,15 @@
+[type]
+location
+
+[realm]
+corpo
+
+[name]
+metro
+
+[description]
+The metro is dirty.
+The metro looks laud and crowdy. Most of the people travels to work, except some hobos which seems to live here. The smell shows that they are living here since ages.
+
+[actions]
+exit THEN PRINT You exit the metro and go to work.; GOTO work

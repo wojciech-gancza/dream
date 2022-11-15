@@ -1,0 +1,18 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+cave
+
+[description]
+You see a cave walls around
+You are in a cave which look like ordinary cave. Somebody uses it as a shelter long time ago. You can find a fireplace in the centre. You see a window of a sky on west. After a while you can examine the cave and you see few holes and cracks around you can try squeeze through. 
+
+[actions]
+n; north; go north              THEN PRINT You squeeze through low hole on north part of the cave; GOTO tunnel
+ne; northeast; go northeast     THEN PRINT You enter a crack on northwest wall; GOTO narrow crack
+w; west; go west                THEN PRINT You exit the cave; GOTO entrance
+nw; northwest; go northwest     THEN PRINT You crawl into a hole on northwest part of the cave; GOTO grotto

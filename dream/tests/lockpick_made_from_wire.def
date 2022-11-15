@@ -1,0 +1,13 @@
+[type]
+item
+
+[name]
+lockpick
+bended wire
+
+[properties]
+resistance = 1
+
+[description]
+Lockpick made of thin shiny wire.
+Maybe it does not look like profesional tool, however it could cheat older locks when you have a little experience with its construction.

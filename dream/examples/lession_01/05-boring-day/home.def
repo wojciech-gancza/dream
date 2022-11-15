@@ -1,0 +1,16 @@
+[type]
+location
+
+[realm]
+corpo
+
+[name]
+home
+
+[description]
+This is your apartment. It looks poor.
+This is your apartment. OK. It is not yours, but you rent it and until you have job you can stay here. The partment is not big. You have a bed and TV.
+
+[actions]
+sleep THEN PRINT You go to bed and fall to sleep; GOTO bed
+watch THEN PRINT You watch TV. This is a junk food for your mind. 

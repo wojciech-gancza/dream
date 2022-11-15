@@ -1,0 +1,12 @@
+[type]
+item
+
+[name]
+gizmo
+
+[description]
+Just a gizmo.
+How it can look? It is ordinary gizmo, so it looks like gizmo
+
+[actions]
+mumble THEN PRINT Hogo-fogo.

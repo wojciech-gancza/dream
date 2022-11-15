@@ -1,0 +1,16 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+grotto
+
+[description]
+You see walls covered with glowing mushrooms.
+You are in a grotto with glowing walls. The light is produced by glowing mushrooms growing directly from the walls. It looks completly unreal. 
+
+[actions]
+ne; northeast; go northeast THEN PRINT You crawl into hole northeast of grotto.; GOTO labirynth
+se; southeast; go southeast THEN PRINT You go in the direction of light - southeast.; GOTO cave

@@ -1,0 +1,16 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+entrance
+
+[description]
+You see dark cave entrance on the east
+You are in small valley covered with bushes. In the bushes on the east, you see a hole looking like entrance to the cave which looks pretty interesting.
+
+[actions]
+e; east; go east THEN GOTO cave
+s THEN GOTO dokadkolwiek

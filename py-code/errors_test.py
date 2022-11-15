@@ -9,7 +9,8 @@
 
 import              unittest
 
-from errors  import error
+from errors  import error, \
+                    break_action
 
 #-------------------------------------------------------------------------
 
@@ -19,6 +20,16 @@ class Test_error(unittest.TestCase):
         try:
             raise error("This is error text")
         except error as err:
-            self.assertTrue(str(err), "ERROR: This is error text")
+            self.assertEqual(str(err), "ERROR: This is error text")
+
+#-------------------------------------------------------------------------
+
+class Test_break_action(unittest.TestCase):
+
+    def test_of_breaking_action_exception(self):
+        try:
+            raise break_action
+        except break_action as err:
+            self.assertEqual(str(err), "BREAK: execution of command was broken.")
 
 #-------------------------------------------------------------------------

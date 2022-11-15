@@ -1,0 +1,13 @@
+[type]
+item
+
+[name]
+treasure map
+map
+
+[description]
+A piece of map with red 'x' on it.
+A piece of old paper with map of cave labirynth. It looks like something is hidden in cave with sand.
+
+[actions]
+_ check treasure map THEN PRINT (because you looked at the treasure map and found where the treasure is hidden)

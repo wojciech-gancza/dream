@@ -1,0 +1,16 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+mansion storage 
+storage
+
+[description]
+Mansion storage looks empty. You see some rubich on the floor.
+This is mansion storage. Floor is covered by piles of rubish. Nothing here looks usefull, however you can spend some time checking this hypothesis. Only way is on south - broken door leading to hall.
+
+[actions]
+w; west; go hall door THEN GOTO mansion hall

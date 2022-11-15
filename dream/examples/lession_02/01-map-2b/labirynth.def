@@ -1,0 +1,23 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+labirynth
+
+[items]
+treasure map
+
+[description]
+You see the cave room looking like labirynth chamber.
+The place looks like labirynth room with few coridors going in various directions.
+
+[actions]
+ne; northeast; go northeast THEN PRINT You go stright to northwest; GOTO sand cave
+e; east; go east            THEN PRINT You go east. It is going dark; GOTO darkness
+se; southeast; go southeast THEN PRINT You go southeast and make few short turns; GOTO tunnel
+sw; southwest; go southwest THEN PRINT You go stright southwest; GOTO grotto
+w; west; go west            THEN PRINT The way west seems to turn and go back; GOTO dark grotto
+nw; northwest; go northwest THEN PRINT The way north seems to turn and go back; GOTO narrow crack

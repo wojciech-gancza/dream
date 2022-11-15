@@ -6,12 +6,15 @@
     All morfing and translating function should be placed here. Also 
     some major adapters to language may be placed here when needed """
     
-import              unittest
+import                  unittest
 
-from tools   import translator
-from data    import location
-from errors  import error
-from builder import object_factory
+from tools       import translator
+from data        import location, \
+                        items
+from errors      import error
+from builder     import object_factory, \
+                        factory_realm_cache, \
+                        factory_location_cache
 
 #-------------------------------------------------------------------------
 
@@ -54,8 +57,18 @@ class _game_mock:
         self._console = testing_console(inputs)
         self._location = location()
         self._location._description.set_description("loc.", "long description of location")
-        self._factory = object_factory("test-dream")
+        self._factory = factory_location_cache(3, factory_realm_cache(object_factory("../dream/tests")))
+        self._pocket = items()
+        self._pocket.put_item( self._factory.get_object("lockpick made from wire") )
+        self._pocket.put_item( self._factory.get_object("unisolated wire") )
         
+    def execute(self, command_text):
+        if self._pocket.try_execute(command_text, self):
+            return True
+        if self._location.try_execute(command_text, self):
+            return True
+        return False      
+
     def stop(self):
         self.log = self.log + "Stop was called\n"
   

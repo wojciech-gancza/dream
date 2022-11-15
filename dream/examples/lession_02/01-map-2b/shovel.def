@@ -1,0 +1,13 @@
+[type]
+item
+
+[name]
+shovel
+spade
+
+[description]
+Ordinary shovel. 
+This is ordinary shovel. Maybe it is not so big, but handy. 
+
+[actions]
+dig THEN PRINT You dig in the ground.; EXEC _ dig ground

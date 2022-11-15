@@ -17,7 +17,10 @@ class console(object):
         print(text)
         
     def read(self):
-        return raw_input("??? > ")
+        try:
+            return raw_input("??? > ")
+        except:
+            return input("??? > ")
      
 #-------------------------------------------------------------------------
 

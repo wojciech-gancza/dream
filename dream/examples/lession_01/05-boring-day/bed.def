@@ -1,0 +1,15 @@
+[type]
+location
+
+[realm]
+corpo
+
+[name]
+bed
+
+[description]
+Your bed smells like it was wet so long that it grows its own civilization.
+You lie in your bed. You relize that this is time to go to work and you probably will be late.
+
+[actions]
+go; wake up; exit THEN PRINT You wake up and go to metrostation to cach a train to go to work.; GOTO metro

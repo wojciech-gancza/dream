@@ -1,0 +1,14 @@
+[type]
+realm
+
+[name]
+corpo
+
+[actions]
+look THEN LOOK
+sleep THEN PRINT You should not sleep here. 
+work THEN PRINT Be serious. You do not like your work so much to work when nobody is watching your
+exit THEN PRINT This is the bigest problem. There is no way
+watch THEN PRINT You stare at the world aroud but see nothing to watch
+eat THEN PRINT You see nothing to eat.
+

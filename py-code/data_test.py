@@ -12,6 +12,7 @@ from data        import description, \
                         properties, \
                         actions, \
                         item, \
+                        items, \
                         location, \
                         realm
 from tools       import translator
@@ -128,7 +129,12 @@ class Test_properties(unittest.TestCase):
         props.add("x", 8000)
         props.add("y", 1000)
         props.add("Mana", 1234)
-        self.assertEqual(str(props), "[properties]\ny = 1000\nx = 8000\nHealth = 123\nMana = 1234\n")
+        ps = str(props)
+        self.assertTrue(ps.find("[properties]") == 0)
+        self.assertTrue(ps.find("\ny = 1000\n")>0)
+        self.assertTrue(ps.find("\nx = 8000\n")>0)
+        self.assertTrue(ps.find("\nHealth = 123\n")>0)
+        self.assertTrue(ps.find("\nMana = 1234\n")>0)
 
 #-------------------------------------------------------------------------
 
@@ -161,31 +167,119 @@ class Test_item(unittest.TestCase):
 
     def test_of_serialization_of_empty_item(self):
         it = item()
-        self.assertEqual(str(it), "[type]\nlocation\n\n[name]\n-nothing-\n\n[properties]\n\n[description]\n-nothing-\n-nothing-\n")
+        self.assertEqual(str(it), "[type]\nlocation\n\n[name]\n-nothing-\n\n[properties]\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\n")
         
     def test_of_filled_item(self):
         it = item()
         it._name.set_names(["a", "b", "c"])
         it._properties.add("x", 12)
-        self.assertEqual(str(it), "[type]\nlocation\n\n[name]\na\nb\nc\n\n[properties]\nx = 12\n\n[description]\n-nothing-\n-nothing-\n")
+        self.assertEqual(str(it), "[type]\nlocation\n\n[name]\na\nb\nc\n\n[properties]\nx = 12\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\n")
       
+#-------------------------------------------------------------------------
+
+class Test_inventory(unittest.TestCase):
+
+    def test_of_serialization_of_empty_item(self):
+        it = items()
+        self.assertEqual(str(it), "[items]\n")
+    
+    def test_of_few_items_in_collection(self):
+        it = items()
+        item1 = item()
+        item1._name.set_names(["AA", "R6"])
+        it.put_item(item1)
+        item2 = item()
+        item2._name.set_names(["AAA", "R3"])
+        it.put_item(item2)
+        self.assertEqual(str(it), "[items]\nAA\nAAA\n")
+
+    def test_of_getting_items_from_collection_1(self):
+        it = items()
+        item1 = item()
+        item1._name.set_names(["AA", "R6"])
+        it.put_item(item1)
+        item2 = item()
+        item2._name.set_names(["AAA", "R3"])
+        it.put_item(item2)
+        item3 = it.get_item("R3")
+        self.assertEqual(str(it), "[items]\nAA\n")
+        self.assertEqual(item3._name.get_name(), "AAA")
+
+    def test_of_getting_items_from_collection_2(self):
+        it = items()
+        item1 = item()
+        item1._name.set_names(["AA", "R6"])
+        it.put_item(item1)
+        item2 = item()
+        item2._name.set_names(["AAA", "R3"])
+        it.put_item(item2)
+        item3 = it.get_item("AA")
+        self.assertEqual(str(it), "[items]\nAAA\n")
+        self.assertEqual(item3._name.get_name(), "AA")
+
+    def test_of_getting_items_from_collection_3(self):
+        it = items()
+        item1 = item()
+        item1._name.set_names(["AA", "R6"])
+        it.put_item(item1)
+        item2 = item()
+        item2._name.set_names(["AAA", "R3"])
+        it.put_item(item2)
+        item3 = it.get_item("C")
+        self.assertEqual(str(it), "[items]\nAA\nAAA\n")
+        self.assertFalse(item3)
+
+    def test_of_peek_items_from_collection_1(self):
+        it = items()
+        item1 = item()
+        item1._name.set_names(["AA", "R6"])
+        it.put_item(item1)
+        item2 = item()
+        item2._name.set_names(["AAA", "R3"])
+        it.put_item(item2)
+        item3 = it.peek_item("R3")
+        self.assertEqual(str(it), "[items]\nAA\nAAA\n")
+        self.assertEqual(item3._name.get_name(), "AAA")
+
+    def test_of_peek_items_from_collection_2(self):
+        it = items()
+        item1 = item()
+        item1._name.set_names(["AA", "R6"])
+        it.put_item(item1)
+        item2 = item()
+        item2._name.set_names(["AAA", "R3"])
+        it.put_item(item2)
+        item3 = it.peek_item("C")
+        self.assertEqual(str(it), "[items]\nAA\nAAA\n")
+        self.assertFalse(item3)
+
+    def test_execution_of_items_from_collection(self):
+        it = items()
+        item1 = item()
+        act = command(command_name(["x"]), [ print_text_node("Hello!") ] )
+        item1._actions.add_action( act )
+        it.put_item(item1)
+        game = _game_mock()
+        it.try_execute("x", game)
+        self.assertEqual(game._console._buffer, "Hello!\n")
+
 #-------------------------------------------------------------------------
 
 class Test_location(unittest.TestCase):
 
     def test_of_serialization_of_empty_object(self):
         obj = location()
-        self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\n-nothing-\n\n[properties]\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\n")
+        self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\n-nothing-\n\n[properties]\n\n[items]\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\n")
         
     def test_of_filled_element_1(self):
         obj = location()
         obj._name.set_names(["abc", "xyz"])
-        self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\nabc\nxyz\n\n[properties]\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\n")
+        self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\nabc\nxyz\n\n[properties]\n\n[items]\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\n")
         
     def test_of_filled_element_2(self):
         obj = location()
         obj._actions._actions.append(command(command_name(["abc"]), [exit_node()]))
-        self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\n-nothing-\n\n[properties]\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\nabc THEN EXIT\n")
+        self.assertEqual(str(obj), "[type]\nlocation\n\n[name]\n-nothing-\n\n[properties]\n\n[items]\n\n[description]\n-nothing-\n-nothing-\n\n[actions]\nabc THEN EXIT\n")
         
     def test_of_execution_command(self):
         obj = location()

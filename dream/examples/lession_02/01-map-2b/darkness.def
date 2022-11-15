@@ -1,0 +1,20 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+darkness
+
+[description]
+You see barely nothing. It is dark. 
+The place seems to be large, however it is hard to see anything. You can feel the movement of air, so it should be possible to exit it on many ways. You can go with care touching walls and looking for available exits.
+
+[actions]
+n; north; go north          THEN PRINT You go north. It start to be cold; GOTO underground lake
+e; east; go east            THEN PRINT You enter east tunnel and go a dosen of steps; PRINT you have impression that you turns a littlebit left; GOTO sand cave
+se; southeast; go southeast THEN PRINT You leave complete darkness leading to southeast, or it at least you seems that it is southeast; GOTO narrow crack
+sw; southwest; go southwest THEN PRINT It looks like after few steps you start to see sunlight; GOTO cave
+w; west; go west            THEN PRINT You lead to the south.; GOTO labirynth
+nw; northwest; go northwest THEN PRINT The path northwest is longer that it seems to be. ; GOTO dark grotto

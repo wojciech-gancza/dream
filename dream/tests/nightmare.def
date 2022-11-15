@@ -1,0 +1,10 @@
+[type]
+realm
+
+[name]
+nightmare
+
+[actions]
+wake up; exit THEN PRINT You cannot wake up.
+look THEN LOOK
+i;inventory;pocket THEN POCKET

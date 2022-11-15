@@ -1,0 +1,17 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+underground lake
+
+[description]
+You see the shore of dark and silent underground lake.
+The underground lake bed is filled with small pebbles. The water is perfectly clear, however the lake looks black. You are on south bench of the lake, on a small beach. It looks like the lake is surrouned by bave walls.
+
+[actions]
+ne; northeast; go northeast THEN PRINT You enter the crack northeast, but the tunnel turns right and go directly southeast; GOTO darkness
+se; southeast; go southeast THEN PRINT You enter short passage southeast; GOTO sand cave
+w; west; go west            THEN PRINT You go west, but the crack turns left; GOTO dark grotto

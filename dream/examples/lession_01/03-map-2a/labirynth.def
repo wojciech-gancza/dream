@@ -1,0 +1,17 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+labirynth
+
+[description]
+You see the cave room looking like labirynth chamber.
+The place looks like labirynth room with few coridors going in various directions.
+
+[actions]
+s; south; go south          THEN PRINT You go south. It seems to be south...; GOTO tunnel
+sw; southwest; go southwest THEN PRINT You enter a tummel between rocks on southwest.; GOTO grotto
+w; west; go west            THEN PRINT Gou go east into the darkness.; GOTO dark grotto

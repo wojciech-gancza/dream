@@ -21,3 +21,17 @@ given location. each command from realm can be covered by the commad from locati
 Files structure was reorganized and game mock functionality extends by testing
 console for input/output controll in tests. Added possibility to move between 
 locations
+
+Version 0.02.000
+----------------
+
+[Content]
+Item managenet was added. Items can be stored in locations and taken by the player.
+Items could be created and destroyed. Location cache was added to object factory
+to keep locations alife and to allow storing items at locations. ECEX command 
+was added to allow different execution scenarios depending on items. Examples
+was refactored and reordered. Handbook with 2 lessions was added to project. 
+Starting scripts (Windows) was added to simplify running different games.
+
+
+

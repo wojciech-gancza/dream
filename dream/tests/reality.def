@@ -7,3 +7,5 @@ reality
 [actions]
 wake up; exit THEN PRINT You woke up from the dream.; EXIT
 look THEN LOOK
+i;inventory;pocket THEN POCKET
+take THEN TAKE OBJECT

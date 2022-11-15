@@ -1,0 +1,17 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+tunnel
+
+[description]
+You are in stone tunnel
+You are in a tunnel is formed by water between large boulders. It looks like previously this was a large cave which collapses 
+
+[actions]
+n; north; go north          THEN PRINT You go deeper into the cave tunnels; GOTO labirynth
+se; southeast; go southeast THEN PRINT Going southeast you see the light glow of sunlight; GOTO cave
+sw; southwest; go southwest THEN PRINT Sowthwest should lead to the exit, but it does not; PRINT It is going to be really dark; GOTO dark grotto
