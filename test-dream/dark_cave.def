@@ -1,0 +1,21 @@
+[type]
+location
+
+[name]
+dark cave
+cave
+unknown cave
+
+[realm]
+reality
+
+[properties]
+volume = 1000
+light = 5
+
+[description]
+The cave is really dark
+You see barly nothing. The cave is really dark. After a while you seem to see a shadows in the darkness but you cannot realize what it can be. You see no way out and no possiblility to move safely. 
+
+[actions]
+look THEN PRINT It is too dark to see anything. You should relay or other senses.

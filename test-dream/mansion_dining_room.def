@@ -1,0 +1,17 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+mansion dining room 
+dining room 
+room
+
+[description]
+Mansion dining room looks sad and a little scary. 
+You see mansion dining room. Long time ago it was looking great, however now onlty too havy stuff was not stolen. On south you see door to hall and door to the kitchen, but this are closed and without handle. You need to find different way there.
+
+[actions]
+s; south; go hall door THEN GOTO mansion hall

@@ -1,0 +1,23 @@
+Version 0.01.000
+----------------
+
+[Content]
+Architecture of the program. Main classes for interpretation and compilation.
+Unit tests for all classes and each functionality. Additionally to the game
+elements used in demo - also properties and items are redy to use, however 
+they will be used in next version demo game. Here are included as proof of 
+concept only.
+
+[Functionality]
+Dispalys location info and reads command from the user. Location defines exit 
+command, which is properely executed when user specifies defined command
+
+Version 0.01.001
+----------------
+
+[Content]
+Realm was added to location. Realm allow defining common set of commands for
+given location. each command from realm can be covered by the commad from location
+Files structure was reorganized and game mock functionality extends by testing
+console for input/output controll in tests. Added possibility to move between 
+locations

@@ -1,0 +1,14 @@
+[type]
+item
+
+[name]
+wire
+unisolated wire
+aluminum wire
+
+[properties]
+resistance = 1
+
+[description]
+Short piece of shiny wire.
+This is a piece of wire. It is about 20cm long and it looks like made of aluminium. It is preety hard to bend, but bendable in bare fingers.

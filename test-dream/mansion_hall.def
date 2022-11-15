@@ -1,0 +1,18 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+mansion hall 
+hall
+
+[description]
+You see doors around however main door located on south looks not real.
+This is for sure a hall. Main door located on south are not real - they are painted on solid wall. It looks strange. Maybe other ways lead to somewhere.
+
+[actions]
+n; north; go room door THEN GOTO mansion dining room
+e; east; go storage door THEN GOTO mansion storage
+w; west; go kitchen door THEN GOTO mansion kitchen

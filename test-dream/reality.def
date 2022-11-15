@@ -1,0 +1,9 @@
+[type]
+realm
+
+[name]
+reality
+
+[actions]
+wake up; exit THEN PRINT You woke up from the dream.; EXIT
+look THEN LOOK

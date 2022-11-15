@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------------
+(C) WGan 2020 [vm.pl, #doktorlabo]
+-------------------------------------------------------------------------------
+
+This softwer was developed for widely understood teaching purposes, however it 
+can be used for different purposes, depending on needs
+
+Author of design and code of this piece of software, WGan, allow using this 
+program, codename DREAM, its source code as a whole or any of its parts for 
+any reason. This perimitting includes usage as an engine of any third party 
+released games, as example on lectures how to write a code. (Or how NOT to - 
+depending on lecturer ideas.). It can be used as a part of any commercial
+or not comercial program.
+
+Author is not responsible for any damage of hardware software and any person
+using this software. I was doing my best and I hope the code is more or less 
+clear and easy to use. The end user can read this code and ensure that is it 
+save. Because code could be modified by somebody else - please use as reference
+files located at my web page wgan.pl.
+
+Remark for developers: If you want to use this engie or any of its part in 
+your code, it would be fair to mention its author OR please attach this file 
+to  your release
+
+-------------------------------------------------------------------------------

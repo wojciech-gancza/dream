@@ -1,0 +1,17 @@
+[type]
+location
+
+[realm]
+reality
+
+[name]
+mansion kitchen
+kitchen
+
+[description]
+Mansion kitchen look abadoned years ago
+This is mansion kitchen. It was plundered many times and anything which was not nailed to the floor was already taken. Rest was demolished. You see nothing interested. On  the north you see dining room door. On the west you see hall door.
+
+[actions]
+n; north; go dining door THEN GOTO mansion dining room
+e; east; go hall door THEN GOTO mansion hall
